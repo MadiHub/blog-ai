@@ -1,0 +1,118 @@
+<div className="max-w-full mx-auto bg-secondary-background p-8 rounded-lg border">
+        <h2 className="text-3xl font-semibold mb-6 text-primary-text">Formulir Lengkap</h2>
+
+        <form className="space-y-6">
+            {/* Nama */}
+            <div>
+                <label htmlFor="name" className="block text-sm font-medium text-secondary-text mb-1">Nama Lengkap</label>
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+                />
+            </div>
+
+            {/* Email */}
+            <div>
+            <label htmlFor="email" className="block text-sm font-medium text-secondary-text mb-1">Email</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+            />
+            </div>
+
+            {/* Dropdown */}
+            <div>
+            <label htmlFor="pekerjaan" className="block text-sm font-medium text-secondary-text mb-1">Pekerjaan</label>
+            <select
+                id="pekerjaan"
+                name="pekerjaan"
+                className="w-full px-4 py-2 border border-secondary-text rounded-lg bg-secondary-background transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+            >
+                <option value="">Pilih</option>
+                <option value="mahasiswa">Mahasiswa</option>
+                <option value="developer">Developer</option>
+                <option value="lainnya">Lainnya</option>
+            </select>
+            </div>
+
+            {/* Radio */}
+            <div>
+            <label className="block text-sm font-medium text-secondary-text mb-1">Jenis Kelamin</label>
+            <div className="flex gap-6">
+                <label className="inline-flex items-center">
+                <input
+                    type="radio"
+                    name="gender"
+                    value="laki"
+                    className="text-primary-btn focus:ring-secondary-text text-secondary-text transition"
+                />
+                <span className="ml-2 text-secondary-text">Laki-laki</span>
+                </label>
+                <label className="inline-flex items-center">
+                <input
+                    type="radio"
+                    name="gender"
+                    value="perempuan"
+                    className="text-primary-btn focus:ring-secondary-text text-secondary-text transition"
+                />
+                <span className="ml-2 text-secondary-text">Perempuan</span>
+                </label>
+            </div>
+            </div>
+
+            {/* Checkbox */}
+            <div>
+            <label className="block text-sm font-medium text-secondary-text mb-1">Hobi</label>
+            <div className="flex flex-wrap gap-4">
+                {['Membaca', 'Coding', 'Ngopi'].map((hobi) => (
+                <label key={hobi} className="inline-flex items-center">
+                    <input
+                    type="checkbox"
+                    name="hobi[]"
+                    value={hobi.toLowerCase()}
+                    className="text-primary-btn focus:ring-secondary-text text-secondary-text transition"
+                    />
+                    <span className="ml-2 text-secondary-text">{hobi}</span>
+                </label>
+                ))}
+            </div>
+            </div>
+
+            {/* File Upload */}
+            <div>
+            <label htmlFor="file" className="block text-sm font-medium text-secondary-text mb-1">Upload Foto</label>
+            <input
+                type="file"
+                id="file"
+                name="file"
+                className="w-full text-secondary-text border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+            />
+            </div>
+
+            {/* Textarea */}
+            <div>
+            <label htmlFor="pesan" className="block text-sm font-medium text-secondary-text mb-1">Pesan</label>
+            <textarea
+                id="pesan"
+                name="pesan"
+                rows="4"
+                placeholder="Tulis pesan di sini..."
+                className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+            ></textarea>
+            </div>
+
+            {/* Submit */}
+            <div>
+            <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-all duration-200 transform hover:scale-[1.01]"
+            >
+                Kirim
+            </button>
+            </div>
+        </form>
+        </div>
