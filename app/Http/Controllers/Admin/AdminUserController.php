@@ -55,7 +55,7 @@ class AdminUserController extends Controller
             'password' => Hash::make($request->input('password')),
         ]);
 
-        return redirect()->route('dashboard.users.index')->with('success', 'User berhasil ditambahkan.');
+        return redirect()->route('dashboard.users.index')->with('success', 'Data created successfully.');
     }
 
     /**

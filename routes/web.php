@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Auth\AuthController;
 
 Route::get('/', [GuestController::class, 'index'])->name('guest.home');
@@ -17,6 +18,7 @@ Route::prefix('dashboard')
     ->group(function () {
         Route::get('/users/generate', [AdminUserController::class, 'generateUniqueUser'])->name('users.generate');
         Route::resource('users', AdminUserController::class)->names('users');
+        Route::resource('categories', AdminCategoryController::class)->names('categories');
         Route::resource('blogs', AdminBlogController::class)->names('blogs');
     });
 

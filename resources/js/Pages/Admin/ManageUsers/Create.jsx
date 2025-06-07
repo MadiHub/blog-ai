@@ -195,7 +195,7 @@ export default function ManageUsersCreate() {
                         }
                     </div>
 
-                    <div>
+                    <div className="mt-15">
                         <button
                             type="submit"
                             className="w-full flex items-center justify-center bg-primary-btn text-primary-text font-bold py-2 px-4 rounded-lg hover:bg-secondary-btn transition-all duration-200 cursor-pointer"
