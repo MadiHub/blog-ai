@@ -95,19 +95,21 @@ export default function ManageCategoriesIndex({categories}) {
                                     <br />
                                     {item.updated_at}
                                 </td>
-                                <td className="px-4 py-3 flex gap-2">
-                                <Link href={"/dashboard/categories/" + item.slug}  className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition whitespace-nowrap cursor-pointer">
-                                    <i className="fa-solid fa-eye"></i>
-                                </Link>
-                                <Link href={"/dashboard/categories/" + item.slug + '/edit'}  className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition whitespace-nowrap cursor-pointer">
-                                    <i className="fa-solid fa-pen-to-square"></i>
-                                </Link>
-                                <button 
-                                    onClick={() => handleDelete(item.id, item.slug)}
-                                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition whitespace-nowrap cursor-pointer"
-                                >
-                                    <i className="fa-solid fa-trash"></i>
-                                </button>
+                                <td className="px-4 py-3 text-center align-middle"> 
+                                    <div className="flex gap-2 items-center justify-center"> 
+                                        <Link href={"/dashboard/categories/" + item.slug}  className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition whitespace-nowrap cursor-pointer">
+                                            <i className="fa-solid fa-eye"></i>
+                                        </Link>
+                                        <Link href={"/dashboard/categories/" + item.slug + '/edit'}  className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition whitespace-nowrap cursor-pointer">
+                                            <i className="fa-solid fa-pen-to-square"></i>
+                                        </Link>
+                                        <button 
+                                            onClick={() => handleDelete(item.id, item.slug)}
+                                            className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition whitespace-nowrap cursor-pointer"
+                                        >
+                                            <i className="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

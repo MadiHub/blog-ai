@@ -45,7 +45,7 @@ class AdminCategoryController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp',
         ]);
 
-       if ($request->hasFile('image')) {
+        if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = 'category-' . Str::uuid() . '.' . $image->getClientOriginalExtension();
 
@@ -129,36 +129,36 @@ class AdminCategoryController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
-    {
-        $category = CategoryModel::findOrFail($id);
+        {
+            $post = PostModel::where('id', $id)->with('images')->first();
 
-        if ($category->image && \Storage::disk('public')->exists('Images/Categories/' . $category->image)) {
-            \Storage::disk('public')->delete('Images/Categories/' . $category->image);
+            if (!$post) {
+                return redirect()->back()->with('error', 'Post not found.');
+            }
+
+            // Hapus semua gambar konten dari disk
+            foreach ($post->images as $image) {
+                $filePath = 'Images/Posts/' . $image->filename;
+                if (Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->delete($filePath);
+                }
+            }
+
+            // Hapus entri gambar konten dari database
+            PostImageModel::where('post_id', $post->id)->delete();
+
+            // Hapus thumbnail dari disk (jika ada)
+            if ($post->thumbnail) {
+                $thumbnailPath = 'Images/Posts/Thumbnails/' . $post->thumbnail;
+                if (Storage::disk('public')->exists($thumbnailPath)) {
+                    Storage::disk('public')->delete($thumbnailPath);
+                }
+            }
+
+            // Hapus entri post dari database
+            $post->delete();
+
+            return redirect()->back()->with('success', 'Post and all associated assets deleted successfully.');
         }
-
-        $category->delete();
-
-        return back()->with(['success' => 'Data deleted successfully.']);
-    }
-
-
-    public function generateUniqueUser()
-    {
-        do {
-            $randomName = 'UserDemo' . rand(1000, 9999);
-            $randomUsername = strtolower($randomName . rand(10, 99));
-            $randomEmail = strtolower($randomName) . rand(10, 99) . '@example.com';
-
-            $existsUsername = UserModel::where('username', $randomUsername)->exists();
-            $existsEmail = UserModel::where('email', $randomEmail)->exists();
-
-        } while ($existsUsername || $existsEmail);
-
-        return response()->json([
-            'name' => $randomName,
-            'username' => $randomUsername,
-            'email' => $randomEmail,
-        ]);
-    }
 
 }

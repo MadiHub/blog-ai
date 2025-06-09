@@ -9,7 +9,7 @@
     "devDependencies": {
         "@tailwindcss/vite": "^4.1.8",
         "@vitejs/plugin-react": "^4.5.1",
-        "axios": "^1.8.2",
+        "axios": "^1.9.0",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^1.2.0",
         "tailwindcss": "^4.1.8",
@@ -17,8 +17,26 @@
     },
     "dependencies": {
         "@inertiajs/react": "^2.0.11",
+        "@tiptap/core": "^2.14.0",
+        "@tiptap/extension-bubble-menu": "^2.14.0",
+        "@tiptap/extension-code-block": "^2.14.0",
+        "@tiptap/extension-code-block-lowlight": "^2.14.0",
+        "@tiptap/extension-color": "^2.14.0",
+        "@tiptap/extension-heading": "^2.14.0",
+        "@tiptap/extension-highlight": "^2.14.0",
+        "@tiptap/extension-image": "^2.14.0",
+        "@tiptap/extension-link": "^2.14.0",
+        "@tiptap/extension-list-item": "^2.14.0",
+        "@tiptap/extension-text-align": "^2.14.0",
+        "@tiptap/extension-text-style": "^2.14.0",
+        "@tiptap/pm": "^2.14.0",
+        "@tiptap/react": "^2.14.0",
+        "@tiptap/starter-kit": "^2.14.0",
+        "@yaireo/tagify": "^4.35.1",
+        "lowlight": "^2.9.0",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
+        "react-resizable": "^3.0.5",
         "sweetalert2": "^11.22.0"
     }
 }

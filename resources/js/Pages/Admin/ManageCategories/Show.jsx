@@ -49,7 +49,7 @@ export default function ManageCategoriesShow({category}) {
                             value={data.name}
                             onChange={e => setData('name', e.target.value)}
                             disabled
-                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text bg-gray-700 cursor-not-allowed"
                         />
                     </div>
 
@@ -68,7 +68,7 @@ export default function ManageCategoriesShow({category}) {
                             name="image"
                             disabled
                             onChange={handleImageChange}
-                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text bg-gray-700 cursor-not-allowed"
                         />
                     </div>
                 </form>

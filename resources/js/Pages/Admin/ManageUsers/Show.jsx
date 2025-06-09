@@ -40,7 +40,7 @@ export default function ManageUsersShow({user}) {
                             value={data.name}
                             onChange={e => setData('name', e.target.value)}
                             disabled
-                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text bg-gray-700 cursor-not-allowed"
                         />
                     </div>
 
@@ -53,7 +53,7 @@ export default function ManageUsersShow({user}) {
                             value={data.username}
                             onChange={e => setData('username', e.target.value)}
                             disabled
-                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text bg-gray-700 cursor-not-allowed"
                         />
                     </div>
 
@@ -66,7 +66,7 @@ export default function ManageUsersShow({user}) {
                             value={data.email}
                             onChange={e => setData('email', e.target.value)}
                             disabled
-                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text bg-gray-700 cursor-not-allowed"
                         />
                     </div>
 
@@ -91,7 +91,7 @@ export default function ManageUsersShow({user}) {
                                     setData('password', '');
                                 }
                             }}
-                            className="w-full px-4 py-2 border border-secondary-text rounded-lg bg-secondary-background transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text bg-gray-700 cursor-not-allowed"
                         >
                             <option value="">Select Role</option>
                             <option value="admin">Admin</option>

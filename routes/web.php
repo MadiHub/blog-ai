@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminCategoryController;
+use App\Http\Controllers\Admin\AdminPostController;
 use App\Http\Controllers\Auth\AuthController;
 
 Route::get('/', [GuestController::class, 'index'])->name('guest.home');
@@ -19,6 +20,11 @@ Route::prefix('dashboard')
         Route::get('/users/generate', [AdminUserController::class, 'generateUniqueUser'])->name('users.generate');
         Route::resource('users', AdminUserController::class)->names('users');
         Route::resource('categories', AdminCategoryController::class)->names('categories');
+        Route::resource('posts', AdminPostController::class)->names('posts');
         Route::resource('blogs', AdminBlogController::class)->names('blogs');
     });
+    Route::post('/image-upload', [AdminPostController::class, 'upload']);
+    Route::delete('/image-delete/{filename}', [AdminPostController::class, 'destroyPostImage'])
+    ->name('image.posts.destroy');
+
 
