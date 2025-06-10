@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { router } from '@inertiajs/react'
 
 export default function AdminLayout({ children, adminName = "Admin Komik" }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,6 +16,12 @@ export default function AdminLayout({ children, adminName = "Admin Komik" }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleLogout = (e) => {
+        e.preventDefault();
+
+        router.post("/logout");
+    };
 
   return (
     <div className="flex min-h-screen bg-primary-background">
@@ -52,7 +59,13 @@ export default function AdminLayout({ children, adminName = "Admin Komik" }) {
 
             <a href="/admin/posts" className="hover:bg-primary-background rounded-lg p-2 transition-colors">Posts</a>
             <a href="/admin/settings" className="hover:bg-primary-background rounded-lg p-2 transition-colors">Settings</a>
-          </nav>
+              <button
+                  onClick={handleLogout}
+                  className="hover:bg-primary-background rounded-lg p-2 transition-colors"
+              >
+                Logout
+            </button>          
+            </nav>
         </div>
       </div>
 

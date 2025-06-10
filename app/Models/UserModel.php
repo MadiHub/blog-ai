@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable; 
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait; 
 use DateTimeInterface;
 
-class UserModel extends Model
+class UserModel extends Model implements Authenticatable 
 {
-    use HasFactory;
+    use HasFactory, AuthenticatableTrait;
+
     protected $table = 'tb_users';
     protected $primaryKey = 'id';
 
@@ -18,6 +21,11 @@ class UserModel extends Model
         'email',
         'role',
         'avatar',
+        'password',
+    ];
+
+    // Sembunyikan atribut password saat di-serialize menjadi array/JSON
+    protected $hidden = [
         'password',
     ];
 

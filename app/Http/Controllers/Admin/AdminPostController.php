@@ -270,7 +270,7 @@ class AdminPostController extends Controller
         return redirect()->back()->with('success', 'Post deleted successfully.');
     }
 
-    public function upload(Request $request)
+    public function upload_image_content(Request $request)
     {
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -297,7 +297,7 @@ class AdminPostController extends Controller
         return response()->json(['message' => 'No image file uploaded.'], 400);
     }
     
-    public function destroyPostImage($filename)
+    public function destroy_image_content($filename)
     {
         $imagePathOnDisk = 'Images/Posts/Content/' . $filename;
 

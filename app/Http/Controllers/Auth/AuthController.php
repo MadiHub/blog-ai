@@ -8,6 +8,7 @@ use Inertia\Inertia;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -69,8 +70,47 @@ class AuthController extends Controller
     }
 
     public function login() {
-        // dd($request->all());
-        dd('hai');
+        return Inertia::render('Auth/Login');
+    }
+
+    public function login_process(Request $request)
+    {
+        $request->validate([
+            'email_or_username' => 'required|string',
+            'password' => 'required|string',
+        ], [
+            'email_or_username.required' => 'Email atau Username wajib diisi.',
+            'password.required' => 'Password wajib diisi.',
+        ]);
+
+        $loginField = $request->input('email_or_username');
+        $password = $request->input('password');
+
+        $fieldType = filter_var($loginField, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $credentials = [
+            $fieldType => $loginField,
+            'password' => $password,
+        ];
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->intended('/');
+        }
+
+        return back()->withErrors([
+            'email_or_username' => 'Kredensial salah atau tidak ditemukan.',
+        ])->withInput($request->only('email_or_username'));
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken(); 
+
         return Inertia::render('Auth/Login');
     }
 }

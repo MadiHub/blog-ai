@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 const adminName = "Admin Komik";
 
-export default function Home() {
+export default function Index() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sidebarDropdownOpen, setSidebarDropdownOpen] = useState(false);

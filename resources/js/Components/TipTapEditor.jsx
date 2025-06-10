@@ -291,7 +291,8 @@ const TipTapToolbar = ({ editor }) => {
                             formData.append('image', file);
 
                             try {
-                                const response = await axios.post('/image-upload', formData, {
+                                const uploadUrl = "/dashboard/posts/upload-image-content/";
+                                const response = await axios.post(uploadUrl, formData, {
                                     headers: { 'Content-Type': 'multipart/form-data' },
                                 });
                                 const imageUrl = response.data.url;
@@ -431,7 +432,7 @@ function TipTapEditor({ value, onChange, onImageUploadSuccess, onImageUploadErro
             let filenameToDelete = selectedImageUrl.split('/').pop();
             filenameToDelete = filenameToDelete.split('?')[0]; // Remove query params if any
 
-            const response = await axios.delete(`/image-delete/${filenameToDelete}`);
+            const response = await axios.delete(`/dashboard/posts/image-content-delete/${filenameToDelete}`);
 
             if (response.data.success) {
                 console.log('Gambar berhasil dihapus dari server:', filenameToDelete);
