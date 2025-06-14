@@ -6,17 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use DateTimeInterface;
 
-class CategoryModel extends Model
+class PostTypeModel extends Model
 {
     use HasFactory;
-    protected $table = 'tb_categories';
+    protected $table = 'tb_post_type';
     protected $primaryKey = 'id';
 
     protected $fillable = [
         'name',
         'slug',
         'description',
-        'image',
+        'icon',
     ];
 
     // SET TIMESTAMP
@@ -27,6 +27,7 @@ class CategoryModel extends Model
 
     public function posts()
     {
-        return $this->hasMany(PostModel::class, 'category_id', 'id');
+        return $this->hasMany(PostModel::class, 'post_type_id', 'id');
     }
+
 }

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Head, usePage, useForm, Link, router } from '@inertiajs/react'
 import Swal from 'sweetalert2';
 
-export default function ManageUsersShow({user}) {
+export default function ManageUsersShow({user, seo}) {
     // PROPS ERROR
     const { errors } = usePage().props
     // PROPS ERROR END
@@ -19,6 +19,14 @@ export default function ManageUsersShow({user}) {
 
   return (
     <>
+        <Head>
+            <link rel="icon" href={`/storage/Images/Favicon/${seo.favicon}`} type="image/x-icon" />
+            <meta name="robots" content="noindex, nofollow" />
+            <meta itemprop="name" content={seo.brand_name} />
+            <meta itemprop="description" content={seo.description} />
+            <meta itemprop="image" content={`/storage/Images/BrandLogo/${seo.brand_logo}`} />
+            <title>Dashboard Users</title>
+        </Head>
         <AdminLayout>
             <div className="max-w-lg mx-auto bg-secondary-background p-8 rounded-lg shadow-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center mb-4 mt-4">

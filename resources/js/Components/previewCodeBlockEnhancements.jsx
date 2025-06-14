@@ -2,7 +2,7 @@
 
 export function addCopyButtonsToCodeBlocks(rootElement) {
     if (!rootElement) {
-        console.warn('Root element tidak tersedia untuk menambahkan tombol salin.');
+        // console.warn('Root element tidak tersedia untuk menambahkan tombol salin.');
         return;
     }
 
@@ -60,7 +60,7 @@ export function addCopyButtonsToCodeBlocks(rootElement) {
                     }, 2000);
                 })
                 .catch(err => {
-                    console.error('Gagal menyalin code block:', err);
+                    // console.error('Gagal menyalin code block:', err);
                     // Gunakan SweetAlert2 untuk feedback error
                     Swal.fire({
                         icon: 'error',
@@ -74,5 +74,5 @@ export function addCopyButtonsToCodeBlocks(rootElement) {
         wrapper.appendChild(copyButton);
         // console.log('Tombol Salin ditambahkan untuk:', preBlock);
     });
-    console.log('Copy buttons (re)applied to code blocks.');
+    // console.log('Copy buttons (re)applied to code blocks.');
 }

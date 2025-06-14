@@ -1,42 +1,29 @@
 import AdminLayout from "@/Layouts/AdminLayout";
 import { Head, usePage, useForm, Link, router } from '@inertiajs/react'
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
-export default function ManageUsersEdit({user, seo}) {
+export default function ManageCategoriesEdit({post_type, seo}) {
     // PROPS ERROR
     const { errors } = usePage().props
     // PROPS ERROR END
+    const [selectedIcon, setselectedIcon] = useState(null);
 
     // SETUP FORM
     const { data, setData, reset } = useForm({
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        role: user.role,
+        name: post_type.name,
+        description: post_type.description,
+        icon: '',
     });
 
     function submit(e) {
         e.preventDefault();
-        router.post(`/dashboard/users/${user.id}`, {
-        _method: 'put',
-        ...data,
-    });
-    }
-    // SETUP FORM END
-
-    function generateUser() {
-        fetch('/dashboard/users/generate')
-        .then(res => res.json())
-        .then(data => {
-            setData('name', data.name);
-            setData('username', data.username);
-            setData('email', data.email);
-        })
-        .catch(err => {
-            console.error('Failed to generate user:', err);
+           router.post(`/dashboard/post/types/${post_type.id}`, {
+           _method: 'put',
+           ...data,
         });
     }
+    // SETUP FORM END
 
     // ALERT
     const { flash } = usePage().props;
@@ -70,8 +57,19 @@ export default function ManageUsersEdit({user, seo}) {
     }, [flash]);
     // ALERT END
 
+    const handleIconChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setselectedIcon(reader.result);
+        };
+        reader.readAsDataURL(file);
+        setData('icon', file);
+        }
+    };
 
-  return (
+    return (
     <>
         <Head>
             <link rel="icon" href={`/storage/Images/Favicon/${seo.favicon}`} type="image/x-icon" />
@@ -79,27 +77,19 @@ export default function ManageUsersEdit({user, seo}) {
             <meta itemprop="name" content={seo.brand_name} />
             <meta itemprop="description" content={seo.description} />
             <meta itemprop="image" content={`/storage/Images/BrandLogo/${seo.brand_logo}`} />
-            <title>Dashboard Users</title>
+            <title>Post Type</title>
         </Head>
         <AdminLayout>
             <div className="max-w-lg mx-auto bg-secondary-background p-8 rounded-lg shadow-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center mb-4 mt-4">
-                    <h2 className="text-3xl font-bold text-primary-text">Edit Users</h2>
+                    <h2 className="text-3xl font-bold text-primary-text">Edit Post Type</h2>
                     <div className="flex justify-start md:justify-end mt-2 md:mt-0">
-                        <Link href={'/dashboard/users/'} className="bg-primary-btn hover:bg-secondary-btn px-4 py-2 rounded-3xl transition cursor-pointer">
+                        <Link href={'/dashboard/post/types/'} className="bg-primary-btn hover:bg-secondary-btn px-4 py-2 rounded-3xl transition cursor-pointer">
                             <i className="fa-solid fa-arrow-left text-primary-text font-bold"></i>
                         </Link>
                     </div>
                 </div>
 
-                <button
-                    type="button"
-                    onClick={generateUser}
-                    className="flex mb-4 items-center justify-center bg-orange-500 text-primary-text font-bold py-1 px-4 rounded-lg hover:bg-orange-600 transition-all duration-200 cursor-pointer"
-                >
-                    <i className="fas fa-sync-alt mr-2"></i>
-                        Generate User
-                </button>
                 <form className="space-y-6" onSubmit={submit}>
 
                     <div>
@@ -120,69 +110,42 @@ export default function ManageUsersEdit({user, seo}) {
                     </div>
 
                     <div>
-                        <label htmlFor="username" className="block text-sm font-medium text-secondary-text mb-1">Username</label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            value={data.username}
-                            onChange={e => setData('username', e.target.value)}
+                        <label htmlFor="description" className="block text-sm font-medium text-secondary-text mb-1">Description</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="4"
+                            placeholder="..."
+                            value={data.description}
+                            onChange={e => setData('description', e.target.value)}
                             className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
-                        />
-                        {errors.username &&
+                        ></textarea>
+                        {errors.description &&
                             <div className="alert text-red-500 text-xs mt-2">
-                                {errors.username}
+                                {errors.description}
                             </div>
                         }
                     </div>
 
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-secondary-text mb-1">Email</label>
+                        <label htmlFor="icon" className="block text-sm font-medium text-secondary-text mb-1">Icon</label>
+                        <div className="grid justify-end mb-2">
+                            {selectedIcon ? (
+                                <img src={selectedIcon} alt="Icopn" className="w-20" />
+                            ) : (
+                                post_type.icon && <img src={`/storage/Images/PostTypes/${post_type.icon}`} alt={post_type.slug} className="w-20 rounded-lg" />
+                            )}
+                        </div>
                         <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={data.email}
-                            onChange={e => setData('email', e.target.value)}
+                            type="file"
+                            id="icon"
+                            name="icon"
+                            onChange={handleIconChange}
                             className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
                         />
-                        {errors.email &&
+                        {errors.icon &&
                             <div className="alert text-red-500 text-xs mt-2">
-                                {errors.email}
-                            </div>
-                        }
-                    </div>
-
-                    <div>
-                        <label htmlFor="role" className="block text-sm font-medium text-secondary-text mb-1">Role</label>
-                        <select
-                            id="role"
-                            name="role"
-                            value={data.role}
-                            onChange={e => {
-                                const selectedRole = e.target.value;
-                                setData('role', selectedRole);
-
-                                if (selectedRole === 'admin') {
-                                    setData('password', 'admin123');
-                                } else if (selectedRole === 'author') {
-                                    setData('password', 'author123');
-                                } else if (selectedRole === 'reader') {
-                                    setData('password', 'reader123');
-                                } else {
-                                    setData('password', '');
-                                }
-                            }}
-                            className="w-full px-4 py-2 border border-secondary-text rounded-lg bg-secondary-background transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
-                        >
-                            <option value="">Select Role</option>
-                            <option value="admin">Admin</option>
-                            <option value="author">Author</option>
-                            <option value="reader">Reader</option>
-                        </select>
-                        {errors.role &&
-                            <div className="alert text-red-500 text-xs mt-2">
-                                {errors.role}
+                                {errors.icon}
                             </div>
                         }
                     </div>
@@ -190,7 +153,10 @@ export default function ManageUsersEdit({user, seo}) {
                     <div className="flex justify-end space-x-3 mt-15">
                         <button
                             type="button"
-                            onClick={() => reset()} 
+                                onClick={() => {
+                                reset();               
+                                setselectedIcon(null); 
+                            }}                      
                             className="flex items-center bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-all duration-200"
                             >
                             Reset
@@ -204,7 +170,6 @@ export default function ManageUsersEdit({user, seo}) {
                             <span>Save Changes</span>
                         </button>
                     </div>
-
                 </form>
             </div>
         </AdminLayout>

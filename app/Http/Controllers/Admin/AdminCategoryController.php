@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 
 // MODEL
 use App\Models\CategoryModel;
+use App\Models\SEOModel;
 
 class AdminCategoryController extends Controller
 {
@@ -19,8 +20,10 @@ class AdminCategoryController extends Controller
      */
     public function index()
     {
+        $SEO = SEOModel::first();
         $categories = CategoryModel::all();
         $data = [
+            'seo' => $SEO,
             'categories' => $categories
         ];
 
@@ -32,7 +35,12 @@ class AdminCategoryController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/ManageCategories/Create');
+        $SEO = SEOModel::first();
+        $data = [
+            'seo' => $SEO
+        ];
+
+        return Inertia::render('Admin/ManageCategories/Create', $data);
     }
 
     /**
@@ -42,6 +50,7 @@ class AdminCategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:tb_categories,name',
+            'description' => 'required|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp',
         ]);
 
@@ -55,6 +64,7 @@ class AdminCategoryController extends Controller
         CategoryModel::create([
             'name' => $request->input('name'),
             'slug' => str::slug($request->input('name')),
+            'description' => $request->input('description'),
             'image' => $imageName,
         ]);
 
@@ -66,10 +76,13 @@ class AdminCategoryController extends Controller
      */
     public function show(string $slug)
     {
+        $SEO = SEOModel::first();
+            
         $category = CategoryModel::where('slug', $slug)->firstOrFail();
 
         $data = [
-            'category' => $category
+            'seo' => $SEO,
+            'category' => $category,
         ];
 
         return Inertia::render('Admin/ManageCategories/Show', $data);
@@ -80,9 +93,12 @@ class AdminCategoryController extends Controller
      */
     public function edit(string $slug)
     {
+        $SEO = SEOModel::first();
+
         $category = CategoryModel::where('slug', $slug)->firstOrFail();
 
         $data = [
+            'seo' => $SEO,
             'category' => $category
         ];
 
@@ -118,6 +134,7 @@ class AdminCategoryController extends Controller
         $category->update([
             'name' => $request->input('name'),
             'slug' => Str::slug($request->input('name')),
+            'description' => $request->input('description'),
             'image' => $imageName,
         ]);
 
@@ -129,36 +146,23 @@ class AdminCategoryController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
-        {
-            $post = PostModel::where('id', $id)->with('images')->first();
+    {
+        $category = CategoryModel::find($id); 
 
-            if (!$post) {
-                return redirect()->back()->with('error', 'Post not found.');
-            }
-
-            // Hapus semua gambar konten dari disk
-            foreach ($post->images as $image) {
-                $filePath = 'Images/Posts/' . $image->filename;
-                if (Storage::disk('public')->exists($filePath)) {
-                    Storage::disk('public')->delete($filePath);
-                }
-            }
-
-            // Hapus entri gambar konten dari database
-            PostImageModel::where('post_id', $post->id)->delete();
-
-            // Hapus thumbnail dari disk (jika ada)
-            if ($post->thumbnail) {
-                $thumbnailPath = 'Images/Posts/Thumbnails/' . $post->thumbnail;
-                if (Storage::disk('public')->exists($thumbnailPath)) {
-                    Storage::disk('public')->delete($thumbnailPath);
-                }
-            }
-
-            // Hapus entri post dari database
-            $post->delete();
-
-            return redirect()->back()->with('success', 'Post and all associated assets deleted successfully.');
+        if (!$category) {
+            return redirect()->back()->with('error', 'Category not found.');
         }
+
+        if ($category->image) {
+            $imagePath = 'Images/Categories/' . $category->image;
+            if (Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+        }
+
+        $category->delete();
+
+        return redirect()->route('dashboard.categories.index')->with('success', 'Category deleted successfully.');
+    }
 
 }

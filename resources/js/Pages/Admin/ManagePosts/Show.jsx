@@ -3,9 +3,10 @@ import { Head, useForm, Link } from '@inertiajs/react';
 import React, { useEffect, useRef } from 'react';
 import { addCopyButtonsToCodeBlocks } from '@/Components/previewCodeBlockEnhancements';
 
-export default function ManagePostsShow({ post, categories, tags }) {
+export default function ManagePostsShow({ post, post_types, categories, seo }) {
     const { data } = useForm({
         title: post.title,
+        post_type: post.post_type_id,
         category: post.category_id,
         thumbnail: post.thumbnail,
         content: post.content,
@@ -29,10 +30,22 @@ export default function ManagePostsShow({ post, categories, tags }) {
         return category ? category.name : 'Unknown';
     };
 
-    return (
-        <AdminLayout>
-            <Head title={`Detail Post: ${post.title}`} />
+    const getPostTypeName = (postTypeId) => {
+        const post_type = post_types.find(ptype => ptype.id === postTypeId);
+        return post_type ? post_type.name : 'Unknown';
+    };
 
+    return (
+        <>
+        <Head>
+            <link rel="icon" href={`/storage/Images/Favicon/${seo.favicon}`} type="image/x-icon" />
+            <meta name="robots" content="noindex, nofollow" />
+            <meta itemprop="name" content={seo.brand_name} />
+            <meta itemprop="description" content={seo.description} />
+            <meta itemprop="image" content={`/storage/Images/BrandLogo/${seo.brand_logo}`} />
+            <title>Dashboard Posts</title>
+        </Head>
+        <AdminLayout>
             <div className="max-w-6xl mx-auto bg-secondary-background p-8 rounded-lg shadow-lg space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center mb-4 mt-4">
                     <h2 className="text-3xl font-bold text-white">Detail Post</h2>
@@ -50,6 +63,18 @@ export default function ManagePostsShow({ post, categories, tags }) {
                         id="title"
                         name="title"
                         value={data.title}
+                        disabled
+                        className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text bg-gray-700 cursor-not-allowed"
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="post_type" className="block text-sm font-medium text-secondary-text mb-1">Post Type</label>
+                    <input
+                        type="text"
+                        id="post_type"
+                        name="post_type"
+                        value={getPostTypeName(data.post_type)}
                         disabled
                         className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text bg-gray-700 cursor-not-allowed"
                     />
@@ -122,5 +147,6 @@ export default function ManagePostsShow({ post, categories, tags }) {
                 </div>
             </div>
         </AdminLayout>
+        </>
     );
 }

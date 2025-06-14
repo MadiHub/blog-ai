@@ -34,4 +34,9 @@ class UserModel extends Model implements Authenticatable
     {
         return $date->format('Y-m-d H:i:s');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(CommentModel::class, 'user_id', 'id');
+    }
 }

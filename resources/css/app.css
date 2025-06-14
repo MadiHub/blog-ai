@@ -6,54 +6,68 @@
 @source '../**/*.js';
 
 @font-face {
-    font-family: 'Fira Code'; 
-    src: url('/storage/Fonts/FiraCode/FiraCode-Light.ttf') format('truetype');
+    font-family: 'Fira Code', monospace;
+    src: url("/storage/Fonts/FiraCode/FiraCode-Light.ttf"); /* Path yang benar untuk Vite */
     font-weight: normal;
-    font-style: normal;  
+    font-style: normal;
 }
 
-@font-face {
-    font-family: 'JetBrainsMono-Light'; 
-    src: url('/Fonts/FiraCode/JetBrainsMono-Light.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;  
-}
-
+/* dark1 */
 @theme {
-    /* color btn */
-    --color-primary-btn: #4F91CD;  /* biru terang */
-    --color-secondary-btn: #3B6FA1;  /* biru sedang */
-    /* color background */
-    --color-primary-background: #283243;  /* biru sedang */
-    --color-secondary-background: #1F2A3C;  /* biru tua */
-    /* color text */
-    --color-primary-text: #ffffff;  /* putih terang */
-    --color-secondary-text: #E0E7FF;  /* putih abu */
+    --color-primary-btn: #8B5CF6;    
+    --color-secondary-btn: #6D28D9;  
+
+    --color-primary-background: #121212; 
+    --color-secondary-background: #1E1E1E;
+
+    --color-primary-text: #FAFAFA;     
+    --color-secondary-text: #A3A3A3;    
 }
+/* @theme .light {
+  --color-primary-btn: #60A5FA;     
+  --color-secondary-btn: #93C5FD;    
+  --color-primary-background: #FFFFFF;
+  --color-secondary-background: #F3F4F6;
+  --color-primary-text: #111827;
+  --color-secondary-text: #4B5563;
+} */
+
+/* 
+@theme .dark {
+ --color-primary-btn: #8B5CF6;
+  --color-secondary-btn: #6D28D9;
+  --color-primary-background: #121212;
+  --color-secondary-background: #1E1E1E;
+  --color-primary-text: #FAFAFA;
+  --color-secondary-text: #A3A3A3;
+} */
+
+/* light */
+
+/* @theme {
+    --color-primary-btn: #2563EB;     
+    --color-secondary-btn: #1D4ED8;   
+
+    --color-primary-background: #FFFFFF; 
+    --color-secondary-background: #F3F4F6;
+
+    --color-primary-text: #111827;    
+    --color-secondary-text: #4B5563;   
+} */
+
 
 body {
-   font-family: 'Fira Code', monospace; 
+    font-family: 'Fira Code', monospace; 
+    scroll-behavior: smooth;
 }
 
-/* resources/css/app.css */
-/* resources/css/app.css */
-
-/* Base style for ProseMirror editor container itself */
 .ProseMirror {
     display: block;
-    /* Memberikan gaya dasar pada editor */
-    color: #333; /* Warna teks default */
+    color: #333;
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    line-height: 1.75; /* Line height default untuk keterbacaan */
+    line-height: 1.75; 
 }
 
-/* Styling for common block elements within ProseMirror */
-/* Ini adalah bagian penting untuk spasi antar paragraf/blok.
-   Kelas `prose` dari `@tailwindcss/typography` sudah mengatur `margin-bottom` untuk elemen seperti `<p>`, `<h1>`, `<ul>`, dll.
-   Jika Anda melihat masalah spasi, pastikan `dangerouslySetInnerHTML` digunakan,
-   dan pastikan tidak ada CSS lain yang menimpa aturan `prose`.
-   Aturan di bawah ini akan menimpa default `prose` jika ada konflik.
-*/
 .ProseMirror p,
 .ProseMirror h1, .ProseMirror h2, .ProseMirror h3, .ProseMirror h4, .ProseMirror h5, .ProseMirror h6,
 .ProseMirror ul, .ProseMirror ol,
@@ -256,19 +270,23 @@ body {
 .ProseMirror code,
 .prose code {
     background-color: rgba(97, 97, 97, 0.1);
-    color: #616161;
+    /* color: #ffffff; */
     border-radius: 0.25rem;
     padding: 0.125rem 0.25rem;
     /* font-family: 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', monospace; */
     font-family: 'Fira Code', monospace; 
     font-size: 0.875rem;
 }
-
 .code-block-wrapper {
     position: relative;
-    margin-bottom: 1em;
+    margin-bottom: 2rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background-color: #2d2d2d; /* Warna background block */
+    padding: 1rem 1rem 1rem 1rem; /* Beri ruang agar tidak nempel ke tepi */
 }
 
+/* Tombol ditempatkan absolute terhadap code-block-wrapper */
 .copy-code-button {
     position: absolute;
     top: 0.5rem;
@@ -277,7 +295,7 @@ body {
     color: white;
     border: none;
     border-radius: 0.25rem;
-    padding: 0.3rem 0.6rem;
+    padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
     cursor: pointer;
     opacity: 0.8;

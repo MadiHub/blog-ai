@@ -3,7 +3,7 @@ import { Head, usePage, useForm, Link, router } from '@inertiajs/react'
 import React, { useEffect } from 'react';
 import Swal from 'sweetalert2';
 
-export default function ManageUsersCreate() {
+export default function ManageUsersCreate({seo}) {
     // PROPS ERROR
     const { errors } = usePage().props
     // PROPS ERROR END
@@ -71,10 +71,18 @@ export default function ManageUsersCreate() {
 
   return (
     <>
+        <Head>
+            <link rel="icon" href={`/storage/Images/Favicon/${seo.favicon}`} type="image/x-icon" />
+            <meta name="robots" content="noindex, nofollow" />
+            <meta itemprop="name" content={seo.brand_name} />
+            <meta itemprop="description" content={seo.description} />
+            <meta itemprop="image" content={`/storage/Images/BrandLogo/${seo.brand_logo}`} />
+            <title>Dashboard Users</title>
+        </Head>
         <AdminLayout>
             <div className="max-w-lg mx-auto bg-secondary-background p-8 rounded-lg shadow-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center mb-4 mt-4">
-                    <h2 className="text-3xl font-bold text-white">Create Users</h2>
+                    <h2 className="text-3xl font-bold text-primary-text">Create Users</h2>
                     <div className="flex justify-start md:justify-end mt-2 md:mt-0">
                         <Link href={'/dashboard/users/'} className="bg-primary-btn hover:bg-secondary-btn px-4 py-2 rounded-3xl transition cursor-pointer">
                             <i className="fa-solid fa-arrow-left text-primary-text font-bold"></i>

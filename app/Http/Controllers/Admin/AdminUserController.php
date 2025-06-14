@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 
 // MODEL
+use App\Models\SEOModel;
 use App\Models\UserModel;
 
 class AdminUserController extends Controller
@@ -17,10 +18,12 @@ class AdminUserController extends Controller
      */
     public function index()
     {
+        $SEO = SEOModel::first();
         $users = UserModel::orderByRaw("FIELD(role, 'admin', 'author', 'reader')")
             ->orderBy('updated_at', 'desc')
             ->get();
         $data = [
+            'seo' => $SEO,
             'users' => $users
         ];
         return Inertia::render('Admin/ManageUsers/Index', $data);
@@ -31,7 +34,11 @@ class AdminUserController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/ManageUsers/Create');
+        $SEO = SEOModel::first();
+        $data = [
+            'seo' => $SEO
+        ];
+        return Inertia::render('Admin/ManageUsers/Create', $data);
     }
 
     /**
@@ -63,9 +70,11 @@ class AdminUserController extends Controller
      */
     public function show(string $id)
     {
+        $SEO = SEOModel::first();
         $user = UserModel::where('email', $id)->firstOrFail();
 
         $data = [
+            'seo' => $SEO,
             'user' => $user
         ];
 
@@ -77,9 +86,11 @@ class AdminUserController extends Controller
      */
     public function edit(string $id)
     {
+        $SEO = SEOModel::first();
         $user = UserModel::where('email', $id)->firstOrFail();
 
         $data = [
+            'seo' => $SEO,
             'user' => $user
         ];
 

@@ -1,70 +1,129 @@
-import { useState } from "react";
-import { router, usePage, useForm } from "@inertiajs/react";
+import React, { useEffect } from "react";
+import { useForm, usePage, router, Head } from "@inertiajs/react";
+import Swal from 'sweetalert2';
 
-export default function Login() {
-    const {data, setData} = useForm({
+export default function Login({seo}) {
+    const { data, setData } = useForm({
         email_or_username: "",
         password: "",
     });
-    
-    const { errors } = usePage().props
 
-    function submit(e) {
+    const { errors } = usePage().props;
+
+    const submit = (e) => {
         e.preventDefault();
         router.post("/login/process", data);
-    }
+    };
+
+    // console.log({seo})
+    // SWEETALERT
+    const { flash } = usePage().props;
+
+    // ALERT 
+    useEffect(() => {
+        if (flash.success || flash.info || flash.error) {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+
+        let icon = "info";
+        let title = flash.info;
+        if (flash.success) {
+            icon = "success";
+            title = flash.success;
+        } else if (flash.error) {
+            icon = "error";
+            title = flash.error;
+        }
+    
+        Toast.fire({ icon, title });
+        }
+    }, [flash]);
+    // ALERT END
 
     return (
-        <div className="max-w-md mx-auto mt-20 p-6 bg-secondary-background p-8 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold mb-6 text-center text-white">Login</h2>
+        <>
+            <Head>
+                <link rel="icon" href={`/storage/Images/Favicon/${seo.favicon}`} type="image/x-icon" />
+                <meta itemprop="name" content={seo.brand_name} />
+                <meta name="description" content={seo.description} />
+                <meta itemprop="image" content={`/storage/Images/BrandLogo/${seo.brand_logo}`} />
+                <title>Login</title>
+            </Head>
+            <div className="min-h-screen flex items-center justify-center bg-primary-background px-4">
+                <div className="w-full max-w-md bg-secondary-background border border-secondary-btn shadow-xl rounded-2xl p-8">
+                    <h2 className="text-3xl font-bold text-center text-primary-text mb-6">Login</h2>
+                
 
-        <form className="space-y-6" onSubmit={submit}>
-                <>
-                <div>
-                    <label htmlFor="email_or_username" className="block text-sm font-medium text-secondary-text mb-1">Email Or Username</label>
-                    <input
-                        type="text"
-                        id="email_or_username"
-                        name="email_or_username"
-                        value={data.email_or_username}
-                        onChange={e => setData('email_or_username', e.target.value)}
-                        autoComplete="current-email-or-username"
-                        className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
-                    />
-                    {errors.email_or_username &&
-                        <div className="alert text-red-500 text-xs mt-2">
-                            {errors.email_or_username}
-                    </div>
-                    }
-                </div>
-                <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-secondary-text mb-1">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={data.password}
-                        onChange={e => setData('password', e.target.value)}
-                        autoComplete="current-password"
-                        className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
-                    />
-                    {errors.password &&
-                        <div className="alert text-red-500 text-xs mt-2">
-                            {errors.password}
+                    <form onSubmit={submit} className="space-y-5">
+                        <div>
+                            <label className="block text-sm font-medium text-secondary-text mb-1">
+                                Email atau Username
+                            </label>
+                            <input
+                                type="text"
+                                value={data.email_or_username}
+                                onChange={(e) => setData("email_or_username", e.target.value)}
+                                className="w-full px-4 py-2 rounded-lg border bg-transparent text-secondary-text focus:outline-none focus:ring-1 focus:ring-primary-btn"
+                            />
+                            {errors.email_or_username && (
+                                <p className="text-red-500 text-sm mt-1">{errors.email_or_username}</p>
+                            )}
                         </div>
-                    }
-                </div>
-                <div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-secondary-text mb-1">
+                                Password
+                            </label>
+                            <input
+                                type="password"
+                                value={data.password}
+                                onChange={(e) => setData("password", e.target.value)}
+                                className="w-full px-4 py-2 rounded-lg border bg-transparent text-secondary-text focus:outline-none focus:ring-1 focus:ring-primary-btn"
+                            />
+                            {errors.password && (
+                                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                            )}
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="w-full py-2 bg-primary-btn text-primary-text font-semibold rounded-lg hover:bg-secondary-btn transition"
+                        >
+                            Login
+                        </button>
+                    </form>
+
+                    <div className="my-6 flex items-center gap-3">
+                        <hr className="flex-grow text-gray-300" />
+                        <span className="text-secondary-text text-sm">atau</span>
+                        <hr className="flex-grow text-gray-300" />
+                    </div>
+
                     <button
-                        type="submit"
-                        className="w-full flex items-center justify-center bg-primary-btn text-primary-text font-bold py-2 px-4 rounded-lg hover:bg-secondary-btn transition-all duration-200 cursor-pointer"
+                        onClick={() => router.get('/auth/google')}
+                        className="w-full flex items-center justify-center gap-3 py-2 bg-white text-secondary-text font-medium rounded-lg hover:bg-gray-100 transition"
                     >
-                        {/* <i className="fa-solid fa-plus mr-2"></i> */}
-                        <span>Login</span>
+                        <img src="/google-icon.svg" alt="Google" className="w-5 h-5" />
+                        Login dengan Google
                     </button>
+
+                    <p className="mt-6 text-center text-secondary-text text-sm">
+                        Belum punya akun?{" "}
+                        <a href="/register" className="text-primary-btn hover:underline font-medium">
+                            Daftar sekarang
+                        </a>
+                    </p>
                 </div>
-                </>
-        </form>
-        </div>
+            </div>
+        </>
     );
 }

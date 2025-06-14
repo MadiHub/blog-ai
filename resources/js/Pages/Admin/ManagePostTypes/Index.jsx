@@ -3,7 +3,7 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import { Head, usePage, Link, router } from '@inertiajs/react'
 import Swal from 'sweetalert2';
 
-export default function ManagePostsIndex({posts, seo}) {
+export default function ManageTypesIndex({post_types, seo}) {
     // SWEETALERT
     const { flash } = usePage().props;
 
@@ -38,10 +38,10 @@ export default function ManagePostsIndex({posts, seo}) {
     // ALERT END
 
     // HANDLE DELETE
-    function handleDelete(id, title) {
+    function handleDelete(id, email) {
         Swal.fire({
         title: "Are you sure ?",
-        text: "This data" + " (" + title + ") " + " will be deleted!",
+        text: "This data" + " (" + email + ") " + " will be deleted!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -50,7 +50,7 @@ export default function ManagePostsIndex({posts, seo}) {
         cancelButtonText: "Cancel"
         }).then((result) => {
             if (result.isConfirmed) {
-                router.delete("/dashboard/posts/" + id); 
+                router.delete("/dashboard/post/types/" + id); 
             }
         });
     }
@@ -64,14 +64,14 @@ export default function ManagePostsIndex({posts, seo}) {
             <meta itemprop="name" content={seo.brand_name} />
             <meta itemprop="description" content={seo.description} />
             <meta itemprop="image" content={`/storage/Images/BrandLogo/${seo.brand_logo}`} />
-            <title>Dashboard Posts</title>
+            <title>Post Type</title>
         </Head>
         <AdminLayout>
             <div className="max-w-full">
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center mb-4 mt-4">
-                    <h2 className="text-2xl font-bold text-white">List Posts</h2>
+                    <h2 className="text-2xl font-bold text-white">List Post Type</h2>
                     <div className="flex justify-start md:justify-end mt-2 md:mt-0">
-                        <Link href={'/dashboard/posts/create'} className="bg-primary-btn hover:bg-secondary-btn px-4 py-2 rounded-3xl transition cursor-pointer">
+                        <Link href={'/dashboard/post/types/create'} className="bg-primary-btn hover:bg-secondary-btn px-4 py-2 rounded-3xl transition cursor-pointer">
                             <i className="fa-solid fa-plus text-primary-text font-bold"></i>
                         </Link>
                     </div>
@@ -81,57 +81,39 @@ export default function ManagePostsIndex({posts, seo}) {
                     <table className="min-w-[600px] w-full text-left text-secondary-text">
                         <thead className="bg-secondary-background">
                         <tr>
-                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272] text-center">#</th>
-                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272] text-center">Thumbnail</th>
-                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272] text-center">Title</th>
-                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272] text-center">Post Type</th>
-                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272] text-center">Category</th>
-                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272] text-center">Status</th>
-                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272] text-center">Published At</th>
-                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272] text-center">Created At | Updated At</th>
-                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272] text-center">Aksi</th>
+                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272]">#</th>
+                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272]">Icon</th>
+                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272]">Name</th>
+                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272]">Slug</th>
+                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272]">Description</th>
+                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272]">Created At | Updated At</th>
+                            <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272]">Aksi</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {posts.map((item, i) => (
-                             <tr className="border-t border-[#4F6272] hover:bg-secondary-background transition" key={i}>
-                                <td className="px-4 py-3 text-center align-middle">{i + 1}</td>
-
-                                <td className="py-3 text-center align-middle">
-                                    <img src={`/storage/Images/Posts/Thumbnails/${item.thumbnail}`} alt={item.slug} className="w-20 shadow-lg inline-block" /> {/* tambahkan inline-block untuk img */}
+                        {post_types.map((item, i) => (
+                            <tr className="border-t border-[#4F6272] hover:bg-secondary-background transition" key={i}>
+                                <td className="px-4 py-3">{i + 1}</td>
+                                <td className="py-3">
+                                <img src={`/storage/Images/PostTypes/${item.icon}`} alt={item.name} className="w-20 shadow-lg" />
                                 </td>
-
-                                <td className="px-4 py-3 text-center align-middle">
-                                    {item.title}
-                                </td>
-
-                                <td className="px-4 py-3 text-center align-middle">
-                                    {item.post_type.name}
-                                </td>
-
-                                <td className="px-4 py-3 text-center align-middle">
-                                    {item.category.name}
-                                </td>
-
-                                <td className="py-3 text-center align-middle">{item.status}</td>
-
-                                <td className="py-3 text-center align-middle">{item.published_at ? item.published_at : '-'}</td>
-
-                                <td className="px-4 py-3 text-center align-middle">
+                                <td className="px-4 py-3">{item.name}</td>
+                                <td className="px-4 py-3">{item.slug}</td>
+                                <td className="px-4 py-3">{item.description}</td>
+                                <td className="px-4 py-3">
                                     {item.created_at}
                                     <br />
                                     {item.updated_at}
                                 </td>
-
                                 <td className="px-4 py-3 text-center align-middle"> 
                                     <div className="flex gap-2 items-center justify-center"> 
-                                        <Link href={"/dashboard/posts/" + item.slug} className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition whitespace-nowrap cursor-pointer">
+                                        <Link href={"/dashboard/post/types/" + item.slug}  className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition whitespace-nowrap cursor-pointer">
                                             <i className="fa-solid fa-eye"></i>
                                         </Link>
-                                        <Link href={"/dashboard/posts/" + item.slug + '/edit'} className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition whitespace-nowrap cursor-pointer">
+                                        <Link href={"/dashboard/post/types/" + item.slug + '/edit'}  className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition whitespace-nowrap cursor-pointer">
                                             <i className="fa-solid fa-pen-to-square"></i>
                                         </Link>
-                                        <button
+                                        <button 
                                             onClick={() => handleDelete(item.id, item.slug)}
                                             className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition whitespace-nowrap cursor-pointer"
                                         >

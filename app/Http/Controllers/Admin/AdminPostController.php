@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
+use App\Models\SEOModel;
 use App\Models\PostModel;
 use App\Models\PostImageModel;
+use App\Models\PostTypeModel;
 use App\Models\CategoryModel;
 use App\Models\TagModel;
 use App\Models\PostTagModel;
@@ -20,9 +22,11 @@ class AdminPostController extends Controller
 {
     public function index()
     {
-        $posts = PostModel::with('category')->orderBy('updated_at', 'desc')->get();
+        $SEO = SEOModel::first();
+        $posts = PostModel::with('category', 'post_type')->orderBy('updated_at', 'desc')->get();
         
         $data = [
+            'seo' => $SEO,
             'posts' => $posts,
         ];
 
@@ -31,10 +35,14 @@ class AdminPostController extends Controller
 
     public function create()
     {
+        $SEO = SEOModel::first();
+        $post_types = PostTypeModel::all();
         $categories = CategoryModel::all();
         $tags = TagModel::all();
 
         $data = [
+            'seo' => $SEO,
+            'post_types' => $post_types,
             'categories' => $categories,
             'tags' => $tags,
         ];
@@ -44,8 +52,10 @@ class AdminPostController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'title' => 'required|string|max:255',
+            'post_type' => 'required',
             'category' => 'required',
             'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp',
             'content' => 'required|string',
@@ -76,6 +86,7 @@ class AdminPostController extends Controller
             $post = PostModel::create([
                 'user_id' => 1,
                 'title' => $request->title,
+                'post_type_id' => $request->post_type,
                 'category_id' => $request->category,
                 'slug' => $slug,
                 'thumbnail' => $thumbnailName,
@@ -118,12 +129,16 @@ class AdminPostController extends Controller
     
     public function show(string $slug)
     {
+        $SEO = SEOModel::first();
         $post = PostModel::where('slug', $slug)->with(['images', 'tags'])->firstOrFail();
+        $post_types = PostTypeModel::all();
         $categories = CategoryModel::all();
         $tags = TagModel::all(); 
 
         $data = [
-            'post' => $post,
+            'seo' => $SEO,
+            'post' => $post,            
+            'post_types' => $post_types,
             'categories' => $categories,
             'tags' => $tags
         ];
@@ -133,12 +148,16 @@ class AdminPostController extends Controller
 
     public function edit(string $slug)
     {
+        $SEO = SEOModel::first();
         $post = PostModel::where('slug', $slug)->with(['images', 'tags'])->firstOrFail();
+        $post_types = PostTypeModel::all();
         $categories = CategoryModel::all();
         $tags = TagModel::all(); 
 
         $data = [
+            'seo' => $SEO,
             'post' => $post,
+            'post_types' => $post_types,
             'categories' => $categories,
             'tags' => $tags
         ];
@@ -150,6 +169,7 @@ class AdminPostController extends Controller
     {
         $rules = [
             'title' => 'required|string|max:255',
+            'post_type' => 'required',
             'category' => 'required',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp',
             'content' => 'required|string',
@@ -191,6 +211,7 @@ class AdminPostController extends Controller
             $post->update([
                 'user_id' => 1,
                 'title' => $request->title,
+                'post_type_id' => $request->post_type,
                 'category_id' => $request->category,
                 'slug' => $newSlug,
                 'thumbnail' => $thumbnailName,

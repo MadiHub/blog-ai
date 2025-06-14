@@ -23,7 +23,7 @@ class RedirectIfAuthenticated
                 $user = Auth::guard($guard)->user();
 
                 if ($user->role === 'admin' || $user->role === 'author') {
-                    return redirect()->route('dashboard.users.index');
+                    return redirect()->route('dashboard.index');
                 }
 
                 return redirect()->route('home.index');

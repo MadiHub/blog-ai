@@ -14,6 +14,7 @@ class PostModel extends Model
 
     protected $fillable = [
         'user_id',
+        'post_type_id',
         'category_id',
         'title',
         'slug',
@@ -29,6 +30,11 @@ class PostModel extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
+    public function post_type()
+    {
+        return $this->belongsTo(PostTypeModel::class, 'post_type_id', 'id');
+    }
+
     public function category()
     {
         return $this->belongsTo(CategoryModel::class, 'category_id', 'id');
@@ -42,6 +48,16 @@ class PostModel extends Model
     public function tags()
     {
         return $this->belongsToMany(TagModel::class, 'tb_post_tag', 'post_id', 'tag_id');
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(UserModel::class, 'user_id');
+    }
+    
+    public function comments()
+    {
+        return $this->hasMany(CommentModel::class, 'post_id', 'id');
     }
 
     

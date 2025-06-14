@@ -14,13 +14,16 @@ use Illuminate\Validation\ValidationException;
 
 // MODEL
 use App\Models\UserModel;
+use App\Models\SEOModel;
 
 class AuthController extends Controller
 {
     public function register() {
         // dd($request->all());
+        $SEO = SEOModel::first();
         $step = Session::get('register_step', 1);
         $data = [
+            'seo' => $SEO,
             'step' => $step,
             'errors' => Session::get('errors') ? Session::get('errors')->getBag('default')->getMessages() : new \stdClass(),
         ];
@@ -34,8 +37,8 @@ class AuthController extends Controller
         $rules = [];
         if ($step == 1) {
             $rules = [
-                'name' => 'required|string|max:255',
-                'username' => 'required|string|max:255|unique:tb_users,username',
+                'name' => 'required|string|max:100',
+                'username' => 'required|string|max:20|unique:tb_users,username',
             ];
         } elseif ($step == 2) {
             $rules = [
@@ -65,12 +68,17 @@ class AuthController extends Controller
                 'role' => 'reader',
                 'password' => Hash::make($request->input('password')),
             ]);
-            return redirect()->route('auth.login')->with('success', 'Registration complete!');
+            return redirect()->route('auth.login')->with('success', 'Selamat! Akunmu berhasil didaftarkan. Silakan login ya.');
         }
     }
 
     public function login() {
-        return Inertia::render('Auth/Login');
+        $SEO = SEOModel::first();
+
+        $data = [
+            'seo' => $SEO
+        ];
+        return Inertia::render('Auth/Login', $data);
     }
 
     public function login_process(Request $request)
@@ -95,7 +103,14 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/');
+
+            $user = Auth::user();
+
+            if ($user->role === 'admin' || $user->role === 'author') {
+                return redirect()->route('dashboard.index')->with('success', 'Login success!');
+            } else {
+                return redirect()->route('home.index')->with('success', 'Berhasil Masuk!');
+            }
         }
 
         return back()->withErrors([
@@ -111,6 +126,6 @@ class AuthController extends Controller
 
         $request->session()->regenerateToken(); 
 
-        return Inertia::render('Auth/Login');
+        return redirect()->route('home.index')->with('success', 'Berhasil Keluar!');
     }
 }

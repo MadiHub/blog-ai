@@ -3,27 +3,37 @@ import { Head, usePage, useForm, Link, router } from '@inertiajs/react'
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
-export default function ManageCategoriesEdit({category, seo}) {
+export default function ManagePostTypesCreate({seo}) {
     // PROPS ERROR
     const { errors } = usePage().props
     // PROPS ERROR END
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedIcon, setselectedIcon] = useState(null);
 
     // SETUP FORM
-    const { data, setData, reset } = useForm({
-        name: category.name,
-        description: category.description,
-        image: '',
+    const { data, setData } = useForm({
+        name: '',
+        icon: '',
+        description: '',
     });
 
     function submit(e) {
         e.preventDefault();
-           router.post(`/dashboard/categories/${category.id}`, {
-           _method: 'put',
-           ...data,
-        });
+        router.post("/dashboard/post/types/", data);
     }
     // SETUP FORM END
+
+    function generateUser() {
+        fetch('/dashboard/users/generate')
+        .then(res => res.json())
+        .then(data => {
+            setData('name', data.name);
+            setData('username', data.username);
+            setData('email', data.email);
+        })
+        .catch(err => {
+            console.error('Failed to generate user:', err);
+        });
+    }
 
     // ALERT
     const { flash } = usePage().props;
@@ -57,15 +67,15 @@ export default function ManageCategoriesEdit({category, seo}) {
     }, [flash]);
     // ALERT END
 
-    const handleImageChange = (e) => {
+    const handleIconChange = (e) => {
         const file = e.target.files[0];
         if (file) {
         const reader = new FileReader();
         reader.onloadend = () => {
-            setSelectedImage(reader.result);
+            setselectedIcon(reader.result);
         };
         reader.readAsDataURL(file);
-        setData('image', file);
+        setData('icon', file);
         }
     };
 
@@ -77,14 +87,14 @@ export default function ManageCategoriesEdit({category, seo}) {
             <meta itemprop="name" content={seo.brand_name} />
             <meta itemprop="description" content={seo.description} />
             <meta itemprop="image" content={`/storage/Images/BrandLogo/${seo.brand_logo}`} />
-            <title>Post Category</title>
+            <title>Post Type</title>
         </Head>
         <AdminLayout>
             <div className="max-w-lg mx-auto bg-secondary-background p-8 rounded-lg shadow-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center mb-4 mt-4">
-                    <h2 className="text-3xl font-bold text-primary-text">Edit Post Category</h2>
+                    <h2 className="text-3xl font-bold text-primary-text">Create Post Type</h2>
                     <div className="flex justify-start md:justify-end mt-2 md:mt-0">
-                        <Link href={'/dashboard/categories/'} className="bg-primary-btn hover:bg-secondary-btn px-4 py-2 rounded-3xl transition cursor-pointer">
+                        <Link href={'/dashboard/post/types/'} className="bg-primary-btn hover:bg-secondary-btn px-4 py-2 rounded-3xl transition cursor-pointer">
                             <i className="fa-solid fa-arrow-left text-primary-text font-bold"></i>
                         </Link>
                     </div>
@@ -116,7 +126,6 @@ export default function ManageCategoriesEdit({category, seo}) {
                             name="description"
                             rows="4"
                             placeholder="..."
-                            value={data.description}
                             onChange={e => setData('description', e.target.value)}
                             className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
                         ></textarea>
@@ -128,46 +137,35 @@ export default function ManageCategoriesEdit({category, seo}) {
                     </div>
 
                     <div>
-                        <label htmlFor="image" className="block text-sm font-medium text-secondary-text mb-1">Icon</label>
+                        <label htmlFor="icon" className="block text-sm font-medium text-secondary-text mb-1">Icon</label>
                         <div className="grid justify-end mb-2">
-                            {selectedImage ? (
-                            <img src={selectedImage} alt="Image" className="w-20" />
+                            {selectedIcon ? (
+                            <img src={selectedIcon} alt="icon" className="w-20" />
                             ) : (
-                                category.image && <img src={`/storage/Images/Categories/${category.image}`} alt={category.slug} className="w-20 rounded-lg" />
+                            <img src="/storage/Images/Blank/blank.jpg" alt="Blank IMG" className="w-20 rounded-lg" />
                             )}
                         </div>
                         <input
                             type="file"
-                            id="image"
-                            name="image"
-                            onChange={handleImageChange}
+                            id="icon"
+                            name="icon"
+                            onChange={handleIconChange}
                             className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
                         />
-                        {errors.image &&
+                        {errors.icon &&
                             <div className="alert text-red-500 text-xs mt-2">
-                                {errors.image}
+                                {errors.icon}
                             </div>
                         }
                     </div>
 
-                    <div className="flex justify-end space-x-3 mt-15">
-                        <button
-                            type="button"
-                                onClick={() => {
-                                reset();               
-                                setSelectedImage(null); 
-                            }}                      
-                            className="flex items-center bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-all duration-200"
-                            >
-                            Reset
-                        </button>
-
+                    <div className="mt-15">
                         <button
                             type="submit"
-                            className="flex items-center bg-primary-btn text-primary-text font-bold py-2 px-4 rounded-lg hover:bg-secondary-btn transition-all duration-200"
+                            className="w-full flex items-center justify-center bg-primary-btn text-primary-text font-bold py-2 px-4 rounded-lg hover:bg-secondary-btn transition-all duration-200 cursor-pointer"
                         >
-                            <i className="fa fa-save mr-2"></i>
-                            <span>Save Changes</span>
+                            <i className="fa-solid fa-plus mr-2"></i>
+                            <span>Create</span>
                         </button>
                     </div>
                 </form>

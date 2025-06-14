@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import TagInput from '@/Components/TagInput';
 import TipTapEditor from '@/Components/TipTapEditor'; 
 
-export default function ManagePostsCreate({categories, tags}) {
+export default function ManagePostsCreate({categories, tags, post_types, seo}) {
     const { errors } = usePage().props
     const [selectedImage, setSelectedImage] = useState(null);
     const tagSuggestions = tags.map(tag => tag.name);
@@ -14,6 +14,7 @@ export default function ManagePostsCreate({categories, tags}) {
     // SETUP FORM
     const { data, setData } = useForm({
         title: '',
+        post_type: '',
         category: '',
         thumbnail: '',
         content: '',
@@ -106,10 +107,18 @@ export default function ManagePostsCreate({categories, tags}) {
 
     return (
     <>
+        <Head>
+            <link rel="icon" href={`/storage/Images/Favicon/${seo.favicon}`} type="image/x-icon" />
+            <meta name="robots" content="noindex, nofollow" />
+            <meta itemprop="name" content={seo.brand_name} />
+            <meta itemprop="description" content={seo.description} />
+            <meta itemprop="image" content={`/storage/Images/BrandLogo/${seo.brand_logo}`} />
+            <title>Dashboard Posts</title>
+        </Head>
         <AdminLayout>
             <div className="max-w-6xl mx-auto bg-secondary-background p-8 rounded-lg shadow-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center mb-4 mt-4">
-                    <h2 className="text-3xl font-bold text-white">Create Posts</h2>
+                    <h2 className="text-3xl font-bold text-primary-text">Create Posts</h2>
                     <div className="flex justify-start md:justify-end mt-2 md:mt-0">
                         <Link href={'/dashboard/posts/'} className="bg-primary-btn hover:bg-secondary-btn px-4 py-2 rounded-3xl transition cursor-pointer">
                             <i className="fa-solid fa-arrow-left text-primary-text font-bold"></i>
@@ -131,6 +140,27 @@ export default function ManagePostsCreate({categories, tags}) {
                         {errors.title &&
                             <div className="alert text-red-500 text-xs mt-2">
                                 {errors.title}
+                            </div>
+                        }
+                    </div>
+
+                    <div>
+                        <label htmlFor="post_type" className="block text-sm font-medium text-secondary-text mb-1">Post Type</label>
+                        <select
+                            id="post_type"
+                            name="post_type"
+                            value={data.post_type}
+                            onChange={e => setData('post_type', e.target.value)}
+                            className="w-full px-4 py-2 border border-secondary-text rounded-lg bg-secondary-background transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+                        >
+                            <option value="">Select Post Type</option>
+                            {post_types.map((item, i) => (
+                                <option value={item.id} key={i}>{item.name}</option>
+                            ))}
+                        </select>
+                        {errors.post_type &&
+                            <div className="alert text-red-500 text-xs mt-2">
+                                {errors.post_type}
                             </div>
                         }
                     </div>

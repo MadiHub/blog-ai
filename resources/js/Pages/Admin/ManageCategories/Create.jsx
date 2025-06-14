@@ -3,7 +3,7 @@ import { Head, usePage, useForm, Link, router } from '@inertiajs/react'
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
-export default function ManageUsersCreate() {
+export default function ManageUsersCreate({seo}) {
     // PROPS ERROR
     const { errors } = usePage().props
     // PROPS ERROR END
@@ -12,6 +12,7 @@ export default function ManageUsersCreate() {
     // SETUP FORM
     const { data, setData } = useForm({
         name: '',
+        description: '',
         image: '',
     });
 
@@ -20,19 +21,6 @@ export default function ManageUsersCreate() {
         router.post("/dashboard/categories/", data);
     }
     // SETUP FORM END
-
-    function generateUser() {
-        fetch('/dashboard/users/generate')
-        .then(res => res.json())
-        .then(data => {
-            setData('name', data.name);
-            setData('username', data.username);
-            setData('email', data.email);
-        })
-        .catch(err => {
-            console.error('Failed to generate user:', err);
-        });
-    }
 
     // ALERT
     const { flash } = usePage().props;
@@ -80,10 +68,18 @@ export default function ManageUsersCreate() {
 
     return (
     <>
+        <Head>
+            <link rel="icon" href={`/storage/Images/Favicon/${seo.favicon}`} type="image/x-icon" />
+            <meta name="robots" content="noindex, nofollow" />
+            <meta itemprop="name" content={seo.brand_name} />
+            <meta itemprop="description" content={seo.description} />
+            <meta itemprop="image" content={`/storage/Images/BrandLogo/${seo.brand_logo}`} />
+            <title>Post Category</title>
+        </Head>
         <AdminLayout>
             <div className="max-w-lg mx-auto bg-secondary-background p-8 rounded-lg shadow-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center mb-4 mt-4">
-                    <h2 className="text-3xl font-bold text-white">Create Category</h2>
+                    <h2 className="text-3xl font-bold text-primary-text">Create Post Category</h2>
                     <div className="flex justify-start md:justify-end mt-2 md:mt-0">
                         <Link href={'/dashboard/categories/'} className="bg-primary-btn hover:bg-secondary-btn px-4 py-2 rounded-3xl transition cursor-pointer">
                             <i className="fa-solid fa-arrow-left text-primary-text font-bold"></i>
@@ -106,6 +102,23 @@ export default function ManageUsersCreate() {
                         {errors.name &&
                             <div className="alert text-red-500 text-xs mt-2">
                                 {errors.name}
+                            </div>
+                        }
+                    </div>
+
+                    <div>
+                        <label htmlFor="description" className="block text-sm font-medium text-secondary-text mb-1">Description</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="4"
+                            placeholder="..."
+                            onChange={e => setData('description', e.target.value)}
+                            className="w-full px-4 py-2 border border-secondary-text rounded-lg transition focus:outline-none focus:ring-1 focus:ring-secondary-text text-secondary-text"
+                        ></textarea>
+                        {errors.description &&
+                            <div className="alert text-red-500 text-xs mt-2">
+                                {errors.description}
                             </div>
                         }
                     </div>

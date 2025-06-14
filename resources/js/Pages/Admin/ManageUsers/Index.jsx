@@ -3,7 +3,7 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import { Head, usePage, Link, router } from '@inertiajs/react'
 import Swal from 'sweetalert2';
 
-export default function ManageUsersIndex({users}) {
+export default function ManageUsersIndex({users, seo}) {
      // SWEETALERT
     const { flash } = usePage().props;
 
@@ -57,6 +57,14 @@ export default function ManageUsersIndex({users}) {
     // HANDLE DELETE END
   return (
     <>
+        <Head>
+            <link rel="icon" href={`/storage/Images/Favicon/${seo.favicon}`} type="image/x-icon" />
+            <meta name="robots" content="noindex, nofollow" />
+            <meta itemprop="name" content={seo.brand_name} />
+            <meta itemprop="description" content={seo.description} />
+            <meta itemprop="image" content={`/storage/Images/BrandLogo/${seo.brand_logo}`} />
+            <title>Dashboard Users</title>
+        </Head>
         <AdminLayout>
             <div className="max-w-full">
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center mb-4 mt-4">
@@ -69,8 +77,8 @@ export default function ManageUsersIndex({users}) {
                 </div>
 
                 <div className="shadow-lg rounded-lg max-w-sm md:max-w-full lg:max-w-full overflow-x-auto bg-primary-background">
-                    <table className="min-w-[600px] w-full text-left text-[#F5F5F5]">
-                        <thead className="bg-[#1F2A3C]">
+                    <table className="min-w-[600px] w-full text-left text-secondary-text">
+                        <thead className="bg-secondary-background">
                         <tr>
                             <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272]">#</th>
                             <th scope="col" className="px-4 py-3 whitespace-nowrap border-b border-[#4F6272]">Role</th>
@@ -82,7 +90,7 @@ export default function ManageUsersIndex({users}) {
                         </thead>
                         <tbody>
                         {users.map((item, i) => (
-                            <tr className="border-t border-[#4F6272] hover:bg-[#3C4A5A] transition" key={i}>
+                            <tr className="border-t border-[#4F6272] hover:bg-secondary-background transition" key={i}>
                                 <td className="px-4 py-3">{i + 1}</td>
                                 <td
                                     className={`px-4 py-3 font-semibold ${
