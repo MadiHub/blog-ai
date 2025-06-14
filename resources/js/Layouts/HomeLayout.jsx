@@ -15,9 +15,7 @@ export default function HomeLayout({ children, post_types, seo }) {
     const { auth } = usePage().props;
 
     useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 10);
-        };
+        const handleScroll = () => setScrolled(window.scrollY > 10);
         const handleClickOutside = (event) => {
             if (
                 dropdownRef.current && !dropdownRef.current.contains(event.target) &&
@@ -46,7 +44,7 @@ export default function HomeLayout({ children, post_types, seo }) {
 
     const handleLogout = (e) => {
         e.preventDefault();
-        router.post("/logout");
+        router.post('/logout');
     };
 
     const toggleMobileDropdown = (type) => {
@@ -60,7 +58,7 @@ export default function HomeLayout({ children, post_types, seo }) {
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center space-x-2">
                             <Link href="/">
-                            <span className="text-lg font-bold text-primary-text mt-2">{seo.brand_name}</span>
+                                <span className="text-lg font-bold text-primary-text mt-2">{seo.brand_name}</span>
                             </Link>
                         </div>
                         <div className="hidden md:flex items-center space-x-6">
@@ -98,23 +96,33 @@ export default function HomeLayout({ children, post_types, seo }) {
                                         onClick={() => setDropdownOpen(dropdownOpen === 'desktop-user' ? null : 'desktop-user')}
                                         className="flex items-center space-x-2 focus:outline-none px-2 py-1 rounded transition"
                                     >
-                                        <div className="w-10 h-10 bg-secondary-btn rounded-full flex items-center justify-center text-primary-text font-extrabold text-lg">
-                                            {auth?.user?.username.charAt(0)}
-                                        </div>
+                                        {auth.user.avatar ? (
+                                            <img
+                                                src={auth.user.avatar}
+                                                alt="User Avatar"
+                                                className="w-10 h-10 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-10 h-10 bg-secondary-btn rounded-full flex items-center justify-center text-primary-text font-extrabold text-lg">
+                                                {auth.user.username.charAt(0).toUpperCase()}
+                                            </div>
+                                        )}
                                         <span className="text-sm font-medium text-primary-text">{auth.user.username}</span>
                                     </button>
                                     <div className={`absolute right-0 mt-2 w-44 bg-primary-background rounded-md shadow-lg z-50 transform transition-all duration-300 ease-in-out origin-top ${dropdownOpen === 'desktop-user' ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
                                         <button
                                             type="button"
                                             onClick={handleLogout}
-                                            className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-secondary-background cursor-pointer"
+                                            className="w-full text-left px-4 py-2 text-sm text-red-500 border hover:bg-secondary-background cursor-pointer"
                                         >
-                                            Logout
+                                            <span className="text-primary-text">Logout</span>
                                         </button>
                                     </div>
                                 </div>
                             ) : (
-                                <Link href="/login" className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">Login</Link>
+                                <Link href="/login" className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                                    Login
+                                </Link>
                             )}
                         </div>
                         <div className="md:hidden">
@@ -170,29 +178,32 @@ export default function HomeLayout({ children, post_types, seo }) {
                                 onClick={() => toggleMobileDropdown('user')}
                                 className="w-full flex items-center justify-between py-2 px-4 text-primary-text rounded-md border border-gray-300 hover:bg-secondary-background cursor-pointer transition"
                             >
-                                <span className="text-sm font-medium">{auth.user.name}</span>
+                                <div className="flex items-center space-x-2">
+                                    {auth.user.avatar ? (
+                                        <img
+                                            src={auth.user.avatar}
+                                            alt="User Avatar"
+                                            className="w-8 h-8 rounded-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-8 h-8 bg-secondary-btn rounded-full flex items-center justify-center text-primary-text font-bold">
+                                            {auth.user.username.charAt(0).toUpperCase()}
+                                        </div>
+                                    )}
+                                    <span className="text-sm font-medium">{auth.user.username}</span>
+                                </div>
                                 <svg className={`w-5 h-5 transform transition-transform duration-200 ${dropdownOpen === 'user' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
                             <div className={`transition-all duration-300 ease-in-out overflow-hidden ${dropdownOpen === 'user' ? 'max-h-[200px] opacity-100' : 'max-h-0 opacity-0'}`}>
                                 <div className="bg-primary-background border rounded-md shadow-sm">
-                                    <Link
-                                        href="/dashboard"
-                                        className="block px-4 py-2 text-sm text-secondary-text hover:bg-primary-background"
-                                        onClick={() => {
-                                            setMenuOpen(false);
-                                            setDropdownOpen(null);
-                                        }}
-                                    >
-                                        Dashboard
-                                    </Link>
                                     <button
                                         type="button"
-                                        onClick={() => {
+                                        onClick={(e) => {
                                             setDropdownOpen(null);
                                             setMenuOpen(false);
-                                            handleLogout();
+                                            handleLogout(e);
                                         }}
                                         className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-primary-background"
                                     >

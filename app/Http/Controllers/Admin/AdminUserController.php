@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 // MODEL
 use App\Models\SEOModel;
@@ -47,8 +48,19 @@ class AdminUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:tb_users,username',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[a-zA-Z\s\'.-]+$/'
+            ],
+            'username' => [
+                'required',
+                'string',
+                'max:20',
+                'unique:tb_users,username',
+                'regex:/^[a-zA-Z0-9._]+$/'
+            ],
             'email' => 'required|email|unique:tb_users,email',
             'role' => 'required|string|in:admin,author,reader',
             'password' => 'required|string',
@@ -102,23 +114,44 @@ class AdminUserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:tb_users,username,' . $id,  
-            'email' => 'required|email|unique:tb_users,email,' . $id,                 
-            'role' => 'required|string|in:admin,author,reader',
+       $request->validate([
+                'name' => [
+                    'required',
+                    'string',
+                    'max:100',
+                    'regex:/^[a-zA-Z\s\'.-]+$/'
+                ],
+                'username' => [
+                'required',
+                'string',
+                'max:20',
+                'regex:/^[a-zA-Z0-9._]+$/',
+                Rule::unique('tb_users')->ignore($id)
+            ],
+            'email' => ['required', 'email', Rule::unique('tb_users')->ignore($id)],
+            'role' => ['required', 'string', Rule::in(['admin', 'author', 'reader'])],
         ]);
 
         $user = UserModel::findOrFail($id);
 
+        $oldEmail = $user->email;
+        $newEmail = $request->input('email');
+
+        // Reset google_id & avatar jika email diubah dan akun ini sebelumnya Google login
+        if (!empty($user->google_id) && $oldEmail !== $newEmail) {
+            $user->google_id = null;
+            $user->avatar = null;
+        }
+
         $user->update([
             'name' => $request->input('name'),
             'username' => $request->input('username'),
-            'email' => $request->input('email'),
+            'email' => $newEmail,
             'role' => $request->input('role'),
         ]);
 
-        return back()->with(['success' => 'Data updated successfully.']);
+
+        return redirect()->route('dashboard.users.index')->with('success', 'Data updated successfully.');
     }
 
 
@@ -138,10 +171,47 @@ class AdminUserController extends Controller
 
     public function generateUniqueUser()
     {
+        $firstNames = [
+            // Jawa
+            'Agung', 'Rini', 'Slamet', 'Wulan', 'Eko', 'Dwi', 'Siti', 'Yuni', 'Joko', 'Ratna',
+
+            // Jakarta
+            'Fajar', 'Indah', 'Tasya', 'Adit', 'Nabila', 'Rangga', 'Vina', 'Dani', 'Ayu', 'Bayu',
+
+            // Kalimantan
+            'Dian', 'Ardi', 'Mega', 'Rizky', 'Nova', 'Yudi', 'Santi', 'Rendy', 'Linda', 'Tomi',
+
+            // Tambahan nasional
+            'Farhan', 'Nina', 'Rafa', 'Zahra', 'Iqbal', 'Melati', 'Irwan', 'Kiki', 'Rika', 'Yoga'
+        ];
+
+        $lastNames = [
+            // Umum di Jawa
+            'Sutrisno', 'Handayani', 'Wahyudi', 'Widodo', 'Nurhadi', 'Suryani', 'Hartono', 'Kusuma',
+
+            // Jakarta / Betawi
+            'Hidayat', 'Saputro', 'Syahputra', 'Rahmawati', 'Herlambang', 'Fadillah',
+
+            // Kalimantan & umum
+            'Anshari', 'Mahendra', 'Iskandar', 'Putra', 'Permata', 'Utari', 'Ramadhani', 'Setiawan',
+
+            // Nasional
+            'Wijaya', 'Pratama', 'Utami', 'Maulana', 'Cahyani', 'Fitriani', 'Nugroho', 'Purnama'
+        ];
+
+
         do {
-            $randomName = 'UserDemo' . rand(1000, 9999);
-            $randomUsername = strtolower($randomName . rand(10, 99));
-            $randomEmail = strtolower($randomName) . rand(10, 99) . '@example.com';
+            $randomName = $firstNames[array_rand($firstNames)] . ' ' . $lastNames[array_rand($lastNames)];
+
+            // Gunakan nama depan (tanpa spasi) untuk username base
+            $usernameBase = strtolower(preg_replace('/[^a-zA-Z0-9._]/', '', explode(' ', $randomName)[0]));
+            $suffix = rand(10, 99);
+
+            $maxLength = 20 - strlen($suffix);
+            $usernameBase = substr($usernameBase, 0, $maxLength);
+
+            $randomUsername = $usernameBase . $suffix;
+            $randomEmail = $usernameBase . rand(10, 99) . '@example.com';
 
             $existsUsername = UserModel::where('username', $randomUsername)->exists();
             $existsEmail = UserModel::where('email', $randomEmail)->exists();
@@ -154,5 +224,7 @@ class AdminUserController extends Controller
             'email' => $randomEmail,
         ]);
     }
+
+
 
 }

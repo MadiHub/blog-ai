@@ -262,7 +262,7 @@ export default function PostDetail({ auth, post, relatedPosts, seo, post_types, 
                                     </div>
                                     <button
                                         type="submit"
-                                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md transition-colors duration-200"
+                                        className="bg-secondary-btn hover:bg-primary-btn text-white font-bold py-2 px-6 rounded-md transition-colors duration-200"
                                     >
                                         {replyToCommentId ? 'Kirim Balasan' : 'Kirim Komentar'}
                                     </button>
@@ -274,7 +274,7 @@ export default function PostDetail({ auth, post, relatedPosts, seo, post_types, 
                                     </p>
                                     <Link
                                         href="/login"
-                                        className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-md shadow-lg transition-colors duration-200 transform hover:scale-105"
+                                        className="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-md shadow-lg transition-colors duration-200 transform hover:scale-105"
                                     >
                                         Login Sekarang
                                     </Link>
@@ -285,7 +285,7 @@ export default function PostDetail({ auth, post, relatedPosts, seo, post_types, 
                         <div>
                             <h3 className="text-xl font-semibold text-primary-text mb-4">Komentar Lainnya</h3>
                             {comments && comments.length > 0 ? (
-                                <div className="space-y-6">
+                                <div className="space-y-6 max-h-96 overflow-y-scroll pr-2 custom-scroll">
                                     {comments.map(comment => (
                                         <div key={comment.id} className="bg-primary-background p-4 rounded-lg shadow-sm">
                                             <div className="flex items-center justify-between mb-2">

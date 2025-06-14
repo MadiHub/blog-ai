@@ -26,34 +26,33 @@ use App\Models\CommentModel;
 
 class HomeController extends Controller
 {
-    public function index() {
+    public function index()
+    {
         $SEO = SEOModel::first();
         $categories = CategoryModel::get();
-        $config = HTMLPurifier_Config::createDefault();
-        $config->set('HTML.Allowed', 'p,a[href],strong,em,ul,ol,li,img[src|alt|title],h1,h2,h3,blockquote,br');
-        $purifier = new HTMLPurifier($config);
 
         $postTypes = PostTypeModel::with(['posts' => function ($query) {
-            $query->with('category')
-                ->whereNotNull('published_at')
-                ->latest()
-                ->limit(3);
-
-        }])->get()->map(function ($postType) use ($purifier) {
-            $postType->posts = $postType->posts->map(function ($post) use ($purifier) {
-                $post->content = $purifier->purify($post->content);
-                return $post;
+                $query->with('category')
+                    ->whereNotNull('published_at')
+                    ->latest()
+                    ->limit(3);
+            }])
+            ->orderBy('position', 'asc')
+            ->get()
+            ->map(function ($postType) {
+                $postType->posts = $postType->posts->map(function ($post) {
+                    // Tidak disanitasi: kirim konten asli langsung
+                    $post->content = $post->content;
+                    return $post;
+                });
+                return $postType;
             });
-            return $postType;
-        });
 
-        $data = [
+        return Inertia::render('Home/Index', [
             'seo' => $SEO,
             'categories' => $categories,
-            'post_types' => $postTypes
-        ];
-        // dd($postsByType);
-        return Inertia::render('Home/Index', $data);
+            'post_types' => $postTypes,
+        ]);
     }
 
     public function post_by_category($slug)
@@ -62,7 +61,7 @@ class HomeController extends Controller
         $category = CategoryModel::where('slug', $slug)->firstOrFail();
 
         $config = HTMLPurifier_Config::createDefault();
-        $config->set('HTML.Allowed', 'p,a[href],strong,em,ul,ol,li,img[src|alt|title],h1,h2,h3,blockquote,br');
+        $config->set('HTML.Allowed', 'p,a[href],strong,em,ul,ol,li,img[src|alt|title|width|height|class],h1,h2,h3,blockquote,br,code,pre');
         $purifier = new HTMLPurifier($config);
 
         $posts = PostModel::with('category')
@@ -93,9 +92,9 @@ class HomeController extends Controller
     {
         $SEO = SEOModel::first();
         $tag = TagModel::where('slug', $slug)->firstOrFail();
-        $config = HTMLPurifier_Config::createDefault();
-        $config->set('HTML.Allowed', 'p,a[href],strong,em,ul,ol,li,img[src|alt|title],h1,h2,h3,blockquote,br');
-        $purifier = new HTMLPurifier($config);
+        // $config = HTMLPurifier_Config::createDefault();
+        // $config->set('HTML.Allowed', 'p,a[href],strong,em,ul,ol,li,img[src|alt|title|width|height|class],h1,h2,h3,blockquote,br,code,pre');
+        // $purifier = new HTMLPurifier($config);
 
         $posts = PostModel::with('tags', 'category') 
             ->whereHas('tags', function ($query) use ($slug) {
@@ -128,11 +127,11 @@ class HomeController extends Controller
                          ->whereNotNull('published_at')
                          ->firstOrFail();
 
-        $config = HTMLPurifier_Config::createDefault();
-        $config->set('HTML.Allowed', 'p,a[href],strong,em,ul,ol,li,img[src|alt|title],h1,h2,h3,blockquote,br');
-        $purifier = new HTMLPurifier($config);
+        // $config = HTMLPurifier_Config::createDefault();
+        // $config->set('HTML.Allowed', 'p,a[href],strong,em,ul,ol,li,img[src|alt|title|width|height|class],h1,h2,h3,blockquote,br,code,pre');
+        // $purifier = new HTMLPurifier($config);
 
-        $post->content = $purifier->purify($post->content);
+        // $post->content = $purifier->purify($post->content);
 
         $postTagIds = $post->tags->pluck('id');
 

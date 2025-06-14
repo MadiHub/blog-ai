@@ -13,6 +13,7 @@
         "ezyang/htmlpurifier": "^4.18",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.0",
+        "laravel/socialite": "^5.21",
         "laravel/tinker": "^2.10.1"
     },
     "require-dev": {

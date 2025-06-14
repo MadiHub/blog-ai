@@ -363,12 +363,8 @@ function TipTapEditor({ value, onChange, onImageUploadSuccess, onImageUploadErro
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
-                codeBlock: {
-                    HTMLAttributes: {
-                        class: 'language-js', // Default class for code blocks
-                    },
-                },
-                heading: false, // Manage Heading extension separately
+                codeBlock: false,
+                heading: false, 
             }),
             TextStyle, // For managing text styles like color
             Color,     // For applying text color

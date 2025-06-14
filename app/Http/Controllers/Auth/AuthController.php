@@ -37,8 +37,19 @@ class AuthController extends Controller
         $rules = [];
         if ($step == 1) {
             $rules = [
-                'name' => 'required|string|max:100',
-                'username' => 'required|string|max:20|unique:tb_users,username',
+                'name' => [
+                    'required',
+                    'string',
+                    'max:100',
+                    'regex:/^[a-zA-Z\s\'.-]+$/'
+                ],
+                'username' => [
+                    'required',
+                    'string',
+                    'max:20',
+                    'unique:tb_users,username',
+                    'regex:/^[a-zA-Z0-9._]+$/'
+                ],
             ];
         } elseif ($step == 2) {
             $rules = [
@@ -68,7 +79,7 @@ class AuthController extends Controller
                 'role' => 'reader',
                 'password' => Hash::make($request->input('password')),
             ]);
-            return redirect()->route('auth.login')->with('success', 'Selamat! Akunmu berhasil didaftarkan. Silakan login ya.');
+            return redirect()->route('auth.login')->with('success', 'Berhasil Register akun, Silahkan login.');
         }
     }
 
@@ -109,7 +120,7 @@ class AuthController extends Controller
             if ($user->role === 'admin' || $user->role === 'author') {
                 return redirect()->route('dashboard.index')->with('success', 'Login success!');
             } else {
-                return redirect()->route('home.index')->with('success', 'Berhasil Masuk!');
+                return redirect()->route('home.index')->with('success', 'Berhasil Login!');
             }
         }
 
@@ -126,6 +137,6 @@ class AuthController extends Controller
 
         $request->session()->regenerateToken(); 
 
-        return redirect()->route('home.index')->with('success', 'Berhasil Keluar!');
+        return redirect()->route('home.index')->with('success', 'Berhasil Logout!');
     }
 }

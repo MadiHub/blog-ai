@@ -61,6 +61,32 @@ body {
     scroll-behavior: smooth;
 }
 
+/* CSS manual untuk custom scrollbar */
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-secondary-btn); /* indigo-500 */
+  border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary-btn); /* indigo-600 */
+}
+
+/* Firefox support */
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-secondary-btn) #f1f1f1;
+}
+
+
 .ProseMirror {
     display: block;
     color: #333;
@@ -269,7 +295,7 @@ body {
 /* Styling for inline code (`code` tag) */
 .ProseMirror code,
 .prose code {
-    background-color: rgba(97, 97, 97, 0.1);
+    background-color: rgba(209, 5, 255, 0.1);
     /* color: #ffffff; */
     border-radius: 0.25rem;
     padding: 0.125rem 0.25rem;

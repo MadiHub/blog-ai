@@ -22,6 +22,7 @@ class UserModel extends Model implements Authenticatable
         'role',
         'avatar',
         'password',
+        'google_id',
     ];
 
     // Sembunyikan atribut password saat di-serialize menjadi array/JSON

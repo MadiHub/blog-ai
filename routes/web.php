@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AdminPostTypeController;
 use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
 Route::get('/post/category/{id}', [HomeController::class, 'post_by_category'])->name('home.post.category');
@@ -49,10 +50,15 @@ Route::prefix('dashboard')
         Route::middleware(['admin_or_author'])->group(function () {
             Route::get('/', [AdminDashboardController::class, 'index'])->name('index'); 
             Route::resource('categories', AdminCategoryController::class)->names('categories');
+            Route::post('/sortable/update-categories-position', [AdminCategoryController::class, 'update_categories_position'])->name('post.categories.position.update');
+           
             Route::resource('posts', AdminPostController::class)->names('posts');
+            
             Route::post('/posts/upload-image-content', [AdminPostController::class, 'upload_image_content'])->name('posts.upload_image_content');
             Route::delete('/posts/image-content-delete/{filename}', [AdminPostController::class, 'destroy_image_content'])->name('post.image_content_delete');
+            
             Route::resource('post/types', AdminPostTypeController::class)->names('post.types');
+            Route::post('/sortable/update-post-types-position', [AdminPostTypeController::class, 'update_post_types_position'])->name('post.types.position.update');
         });
     });
 

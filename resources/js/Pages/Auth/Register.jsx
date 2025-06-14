@@ -160,56 +160,76 @@ export default function Register({seo}) {
           )}
 
           {step === 3 && (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-secondary-text mb-1">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={data.password}
-                  onChange={handleChange}
-                  placeholder="Buat password"
-                  className={inputClass}
-                  disabled={loading}
-                />
-                {errors.password && <div className={errorClass}>{errors.password}</div>}
-              </div>
+          <>
+            {/* Hidden fields for browser autocomplete */}
+            <input
+              type="text"
+              name="username"
+              value={data.username}
+              autoComplete="username"
+              readOnly
+              hidden
+            />
+            <input
+              type="email"
+              name="email"
+              value={data.email}
+              autoComplete="email"
+              readOnly
+              hidden
+            />
 
-              <div>
-                <label className="block text-sm font-medium text-secondary-text mb-1">
-                  Konfirmasi Password
-                </label>
-                <input
-                  type="password"
-                  name="password_confirmation"
-                  value={data.password_confirmation}
-                  onChange={handleChange}
-                  placeholder="Ulangi password"
-                  className={inputClass}
-                  disabled={loading}
-                />
-                {errors.password_confirmation && (
-                  <div className={errorClass}>{errors.password_confirmation}</div>
-                )}
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-secondary-text mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={data.password}
+                onChange={handleChange}
+                placeholder="Buat password"
+                className={inputClass}
+                disabled={loading}
+                autoComplete="new-password"
+              />
+              {errors.password && <div className={errorClass}>{errors.password}</div>}
+            </div>
 
-              <div className="flex justify-between">
-                <button
-                  type="button"
-                  onClick={() => setStep(step - 1)}
-                  disabled={loading}
-                  className="px-6 py-2 border border-secondary-btn rounded-lg text-secondary-text hover:bg-secondary-btn/20 transition"
-                >
-                  Kembali
-                </button>
-                <button type="submit" disabled={loading} className={buttonClass}>
-                  {loading ? "Mendaftarkan..." : "Daftar"}
-                </button>
-              </div>
-            </>
-          )}
+            <div>
+              <label className="block text-sm font-medium text-secondary-text mb-1">
+                Konfirmasi Password
+              </label>
+              <input
+                type="password"
+                name="password_confirmation"
+                value={data.password_confirmation}
+                onChange={handleChange}
+                placeholder="Ulangi password"
+                className={inputClass}
+                disabled={loading}
+                autoComplete="new-password"
+              />
+              {errors.password_confirmation && (
+                <div className={errorClass}>{errors.password_confirmation}</div>
+              )}
+            </div>
+
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={() => setStep(step - 1)}
+                disabled={loading}
+                className="px-6 py-2 border border-secondary-btn rounded-lg text-secondary-text hover:bg-secondary-btn/20 transition"
+              >
+                Kembali
+              </button>
+              <button type="submit" disabled={loading} className={buttonClass}>
+                {loading ? "Mendaftarkan..." : "Daftar"}
+              </button>
+            </div>
+          </>
+        )}
         </form>
 
         <p className="mt-6 text-center text-secondary-text text-sm">

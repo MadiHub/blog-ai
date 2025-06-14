@@ -21,7 +21,8 @@ class AdminCategoryController extends Controller
     public function index()
     {
         $SEO = SEOModel::first();
-        $categories = CategoryModel::all();
+        $categories = CategoryModel::orderBy('position', 'asc')->get();
+
         $data = [
             'seo' => $SEO,
             'categories' => $categories
@@ -66,6 +67,7 @@ class AdminCategoryController extends Controller
             'slug' => str::slug($request->input('name')),
             'description' => $request->input('description'),
             'image' => $imageName,
+            'position' => 0,
         ]);
 
         return redirect()->route('dashboard.categories.index')->with('success', 'Data created successfully.');
@@ -165,4 +167,27 @@ class AdminCategoryController extends Controller
         return redirect()->route('dashboard.categories.index')->with('success', 'Category deleted successfully.');
     }
 
+    public function update_categories_position(Request $request)
+    { 
+        $data = $request->input('data_sortable_categories'); // Ambil input dengan nama yang sama persis
+
+        // Validasi, sangat disarankan untuk keamanan
+        $request->validate([
+            'data_sortable_categories' => 'required|array',
+            'data_sortable_categories.*.id' => 'required|exists:tb_categories,id', // Validasi 'id' sebagai ID, bukan slug
+            'data_sortable_categories.*.position' => 'required|integer',
+        ]);
+
+        foreach ($data as $item) { // Menggunakan $data seperti di post_types
+            // Mengambil currentUpdatedAt agar perilakunya sama persis dengan post_types
+            $currentUpdatedAt = CategoryModel::where('id', $item['id'])->value('updated_at');
+
+            // Perhatikan: di kategori, kita menggunakan 'id' yang sebenarnya sebagai pengenal,
+            // bukan 'slug' seperti di post_types. Ini harus konsisten dengan JavaScript Anda.
+            CategoryModel::where('id', $item['id'])
+                         ->update(['position' => $item['position'], 'updated_at' => $currentUpdatedAt]);
+        }
+
+        return response()->json(['message' => 'Category positions updated successfully!'], 200);
+    }
 }

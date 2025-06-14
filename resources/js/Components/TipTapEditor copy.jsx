@@ -132,7 +132,38 @@ const TipTapToolbar = ({ editor }) => {
             >
                 H2
             </button>
-
+            <button
+                type="button"
+                onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+                className={`${buttonClass} ${editor.isActive('heading', { level: 3 }) ? activeButtonClass : ''}`}
+                title="Heading 3"
+            >
+                H3
+            </button>
+            <button
+                type="button"
+                onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+                className={`${buttonClass} ${editor.isActive('heading', { level: 4 }) ? activeButtonClass : ''}`}
+                title="Heading 4"
+            >
+                H4
+            </button>
+            <button
+                type="button"
+                onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
+                className={`${buttonClass} ${editor.isActive('heading', { level: 5 }) ? activeButtonClass : ''}`}
+                title="Heading 5"
+            >
+                H5
+            </button>
+            <button
+                type="button"
+                onClick={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}
+                className={`${buttonClass} ${editor.isActive('heading', { level: 6 }) ? activeButtonClass : ''}`}
+                title="Heading 6"
+            >
+                H6
+            </button>
             <button
                 type="button"
                 onClick={() => editor.chain().focus().setTextAlign('left').run()}
@@ -260,7 +291,8 @@ const TipTapToolbar = ({ editor }) => {
                             formData.append('image', file);
 
                             try {
-                                const response = await axios.post('/image-upload', formData, {
+                                const uploadUrl = "/dashboard/posts/upload-image-content/";
+                                const response = await axios.post(uploadUrl, formData, {
                                     headers: { 'Content-Type': 'multipart/form-data' },
                                 });
                                 const imageUrl = response.data.url;
@@ -400,7 +432,7 @@ function TipTapEditor({ value, onChange, onImageUploadSuccess, onImageUploadErro
             let filenameToDelete = selectedImageUrl.split('/').pop();
             filenameToDelete = filenameToDelete.split('?')[0]; // Remove query params if any
 
-            const response = await axios.delete(`/image-delete/${filenameToDelete}`);
+            const response = await axios.delete(`/dashboard/posts/image-content-delete/${filenameToDelete}`);
 
             if (response.data.success) {
                 console.log('Gambar berhasil dihapus dari server:', filenameToDelete);
@@ -552,4 +584,4 @@ function TipTapEditor({ value, onChange, onImageUploadSuccess, onImageUploadErro
     );
 }
 
-export default TipTapEditor;
+export default React.memo(TipTapEditor);

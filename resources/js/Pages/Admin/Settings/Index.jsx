@@ -1,25 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Head, router, usePage } from '@inertiajs/react'; // Added usePage
+import { Head, router, usePage } from '@inertiajs/react'; 
 import AdminLayout from "@/Layouts/AdminLayout";
-import { SEO } from './SEO/Index'; // Corrected import path
-import Swal from 'sweetalert2'; // Added Swal import
+import { SEO } from './SEO/Index'; 
+import Swal from 'sweetalert2';
 
 export default function Settings({ title, settings }) {
-    // LOGOUT HANDLE
-    const handleLogout = () => {
-        router.post('/logout_admin')
-    };
-
-    // SIDEBAR ACTIVE SCRIPT (This logic seems to be handled by AdminLayout, consider removing if redundant)
-    // const [isActive, setIsActive] = useState(false)
-    // const handleClick = () => {
-    //     setIsActive(!isActive)
-    // }
-
-    // State untuk menyimpan tab aktif
     const [activeTab, setActiveTab] = useState('seo-tab');
 
-    // Ambil tab aktif dari localStorage saat komponen dimuat
     useEffect(() => {
         const storedTab = localStorage.getItem('activeTab');
         if (storedTab) {
@@ -27,7 +14,6 @@ export default function Settings({ title, settings }) {
         }
     }, []);
 
-    // Simpan tab aktif ke localStorage
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
         localStorage.setItem('activeTab', tabName);
@@ -68,11 +54,11 @@ export default function Settings({ title, settings }) {
     return (
         <>
         <Head>
-            <link rel="icon" href={`/storage/Images/Favicon/${settings.seo.favicon}`} type="image/x-icon" />
+            <link rel="icon" href={`/storage/Images/Favicon/${settings.seo[0].favicon}`} type="image/x-icon" />
             <meta name="robots" content="noindex, nofollow" />
-            <meta itemprop="name" content={settings.seo.brand_name} />
-            <meta itemprop="description" content={settings.seo.description} />
-            <meta itemprop="image" content={`/storage/Images/BrandLogo/${settings.seo.brand_logo}`} />
+            <meta itemprop="name" content={settings.seo[0].brand_name} />
+            <meta itemprop="description" content={settings.seo[0].description} />
+            <meta itemprop="image" content={`/storage/Images/BrandLogo/${settings.seo[0].brand_logo}`} />
             <title>Dashboard Settings</title>
         </Head>
         <AdminLayout>
@@ -108,7 +94,7 @@ export default function Settings({ title, settings }) {
                 <div id="api-tab" className={`tab-content ${activeTab === 'api-tab' ? 'block' : 'hidden'}`}>
                     <div className="p-4 border border-secondary-text rounded-lg text-secondary-text">
                         {/* <Tripay /> */}{/* Uncomment and implement your Tripay component */}
-                        <p>API settings will go here.</p>
+                        <p>API setting mendatang.</p>
                     </div>
                 </div>
             </div>

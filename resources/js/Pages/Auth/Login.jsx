@@ -62,7 +62,6 @@ export default function Login({seo}) {
                 <div className="w-full max-w-md bg-secondary-background border border-secondary-btn shadow-xl rounded-2xl p-8">
                     <h2 className="text-3xl font-bold text-center text-primary-text mb-6">Login</h2>
                 
-
                     <form onSubmit={submit} className="space-y-5">
                         <div>
                             <label className="block text-sm font-medium text-secondary-text mb-1">
@@ -72,6 +71,7 @@ export default function Login({seo}) {
                                 type="text"
                                 value={data.email_or_username}
                                 onChange={(e) => setData("email_or_username", e.target.value)}
+                                autoComplete="email-username"
                                 className="w-full px-4 py-2 rounded-lg border bg-transparent text-secondary-text focus:outline-none focus:ring-1 focus:ring-primary-btn"
                             />
                             {errors.email_or_username && (
@@ -87,6 +87,7 @@ export default function Login({seo}) {
                                 type="password"
                                 value={data.password}
                                 onChange={(e) => setData("password", e.target.value)}
+                                autoComplete="password"
                                 className="w-full px-4 py-2 rounded-lg border bg-transparent text-secondary-text focus:outline-none focus:ring-1 focus:ring-primary-btn"
                             />
                             {errors.password && (
@@ -108,13 +109,15 @@ export default function Login({seo}) {
                         <hr className="flex-grow text-gray-300" />
                     </div>
 
-                    <button
-                        onClick={() => router.get('/auth/google')}
-                        className="w-full flex items-center justify-center gap-3 py-2 bg-white text-secondary-text font-medium rounded-lg hover:bg-gray-100 transition"
+                    <a href="/google/redirect"
+                        className="w-full flex items-center justify-center gap-3 py-2 bg-white text-gray-900 font-medium rounded-lg hover:bg-gray-100 transition"
                     >
-                        <img src="/google-icon.svg" alt="Google" className="w-5 h-5" />
+                        <img
+                            src={`/storage/Images/GoogleLogo/google.png`}
+                            alt="Google"
+                            className="w-5 h-5" />
                         Login dengan Google
-                    </button>
+                    </a>
 
                     <p className="mt-6 text-center text-secondary-text text-sm">
                         Belum punya akun?{" "}

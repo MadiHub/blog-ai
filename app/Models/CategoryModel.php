@@ -13,10 +13,12 @@ class CategoryModel extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'id',
         'name',
         'slug',
         'description',
         'image',
+        'position',
     ];
 
     // SET TIMESTAMP

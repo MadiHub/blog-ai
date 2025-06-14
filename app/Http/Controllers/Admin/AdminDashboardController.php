@@ -11,6 +11,9 @@ use Illuminate\Support\Str;
 
 // MODEL
 use App\Models\SEOModel;
+use App\Models\PostModel;
+use App\Models\CategoryModel;
+use App\Models\UserModel;
 
 class AdminDashboardController extends Controller
 {
@@ -20,8 +23,18 @@ class AdminDashboardController extends Controller
     public function index()
     {
         $SEO = SEOModel::first();
+
+        $totalPosts = PostModel::count();
+
+        $totalCategories = CategoryModel::count();
+
+        $totalReaders = UserModel::where('role', 'reader')->count();
+
         $data = [
             'seo' => $SEO,
+            'totalPosts' => $totalPosts,
+            'totalCategories' => $totalCategories,
+            'totalReaders' => $totalReaders,
         ];
 
         return Inertia::render('Admin/Dashboard/Index', $data);

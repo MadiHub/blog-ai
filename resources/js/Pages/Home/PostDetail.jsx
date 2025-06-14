@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import HomeLayout from '@/Layouts/HomeLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import { addCopyButtonsToCodeBlocks } from '@/Components/previewCodeBlockEnhancements';
+import Swal from 'sweetalert2';
 
 const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -15,6 +16,7 @@ export default function PostDetail({ auth, post, relatedPosts, seo, post_types, 
     const [commentContent, setCommentContent] = useState('');
     const [replyToCommentId, setReplyToCommentId] = useState(null);
     const [replyToUsername, setReplyToUsername] = useState('');
+    const commentTextareaRef = useRef(null);
 
     useEffect(() => {
         if (previewRef.current && post.content) {
@@ -42,119 +44,185 @@ export default function PostDetail({ auth, post, relatedPosts, seo, post_types, 
     }, []);
 
     const handleSubmitComment = async (e) => {
-        e.preventDefault();
+        e.preventDefault();
 
-        if (!auth?.user) {
-            alert('Anda harus login untuk bisa berkomentar.');
-            return;
-        }
-        if (!commentContent.trim()) {
-            alert('Komentar tidak boleh kosong!');
-            return;
-        }
+        if (!auth?.user) {
+            Swal.fire({
+            icon: 'warning',
+            title: 'Oops!',
+            text: 'Anda harus login untuk bisa berkomentar.',
+            });
+            return;
+        }
 
-        try {
-            const response = await fetch('/post/comments', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: JSON.stringify({
-                    post_id: post.id,
-                    // user_id: auth.user.id, // Tidak perlu dikirim dari frontend, biarkan backend yang mengambil dari Auth::id()
-                    comment: commentContent, // Ubah dari 'comment' menjadi 'content' sesuai controller
-                    parent_id: replyToCommentId,
-                }),
-            });
+        if (!commentContent.trim()) {
+            Swal.fire({
+            icon: 'warning',
+            title: 'Komentar kosong!',
+            text: 'Komentar tidak boleh kosong!',
+            });
+            return;
+        }
 
-            if (response.ok) {
-                const newComment = await response.json();
-                // alert('Komentar berhasil dikirim!');
+        try {
+            const response = await fetch('/post/comments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+            body: JSON.stringify({
+                post_id: post.id,
+                comment: commentContent,
+                parent_id: replyToCommentId,
+            }),
+            });
 
-                setComments(prevComments => {
-                    // Jika membalas komentar, tambahkan ke replies dari komentar induk
-                    if (replyToCommentId) {
-                        return prevComments.map(comment =>
-                            comment.id === replyToCommentId
-                                ? { ...comment, replies: [...(comment.replies || []), newComment] }
-                                : comment
-                        );
-                    } else {
-                        // Jika komentar utama, tambahkan ke array comments
-                        return [...prevComments, newComment];
-                    }
-                });
+            if (response.ok) {
+            const newComment = await response.json();
 
-                setCommentContent('');
-                setReplyToCommentId(null);
-                setReplyToUsername('');
-            } else {
-                const errorData = await response.json();
-                alert('Gagal mengirim komentar: ' + (errorData.message || 'Terjadi kesalahan.'));
-            }
-        } catch (error) {
-            console.error('Error submitting comment:', error);
-            alert('Terjadi kesalahan saat mengirim komentar.');
-        }
-    };
+            setComments(prevComments => {
+                if (replyToCommentId) {
+                return prevComments.map(comment =>
+                    comment.id === replyToCommentId
+                    ? { ...comment, replies: [...(comment.replies || []), newComment] }
+                    : comment
+                );
+                } else {
+                return [...prevComments, newComment];
+                }
+            });
+
+            setCommentContent('');
+            setReplyToCommentId(null);
+            setReplyToUsername('');
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Komentar berhasil dikirim!',
+                toast: true,
+                position: 'top-end',
+                timer: 3000,
+                showConfirmButton: false,
+            });
+
+            } else {
+            const errorData = await response.json();
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal mengirim komentar',
+                text: errorData.message || 'Terjadi kesalahan.',
+            });
+            }
+        } catch (error) {
+            console.error('Error submitting comment:', error);
+            Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: 'Terjadi kesalahan saat mengirim komentar.',
+            });
+        }
+        };
+
 
     const handleReplyClick = (commentId, username) => {
-        setReplyToCommentId(commentId);
-        setReplyToUsername(username);
-        document.getElementById('commentFormSection').scrollIntoView({ behavior: 'smooth' });
-    };
+        setReplyToCommentId(commentId);
+        setReplyToUsername(username);
+
+        // Scroll ke form
+        document.getElementById('commentFormSection')?.scrollIntoView({ behavior: 'smooth' });
+
+        // Tunggu scroll selesai dulu baru fokus (pakai timeout kecil)
+        setTimeout(() => {
+            commentTextareaRef.current?.focus();
+        }, 300); // 300ms cukup smooth
+    };
+
 
     const handleCancelReply = () => {
         setReplyToCommentId(null);
         setReplyToUsername('');
     };
 
-    const handleDeleteComment = async (commentId) => {
-        if (!auth?.user) {
-            alert('Anda harus login untuk menghapus komentar.');
-            return;
-        }
+   const handleDeleteComment = async (commentId) => {
+  if (!auth?.user) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Login diperlukan',
+      text: 'Anda harus login untuk menghapus komentar.',
+    });
+    return;
+  }
 
-        if (!window.confirm('Apakah Anda yakin ingin menghapus komentar ini?')) {
-            return;
-        }
+  const result = await Swal.fire({
+    title: 'Yakin ingin menghapus komentar ini?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#6b7280', // Tailwind gray-500
+    confirmButtonText: 'Ya, hapus',
+    cancelButtonText: 'Batal'
+  });
 
-        try {
-            const response = await fetch(`/post/comments/${commentId}`, {
-                method: 'DELETE',
-                headers: {
-                    // Gunakan X-CSRF-TOKEN untuk permintaan DELETE jika ini aplikasi web berbasis sesi
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-            });
+  if (!result.isConfirmed) return;
 
-            if (response.ok) {
-                alert('Komentar berhasil dihapus!');
-                setComments(prevComments => {
-                    // Filter komentar utama dan balasan yang dihapus
-                    const updatedComments = prevComments.filter(comment => comment.id !== commentId);
+  try {
+    const response = await fetch(`/post/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      },
+    });
 
-                    return updatedComments.map(comment => ({
-                        ...comment,
-                        // Pastikan juga menghapus dari balasan jika yang dihapus adalah balasan
-                        replies: comment.replies?.filter(reply => reply.id !== commentId) || []
-                    }));
-                });
-            } else if (response.status === 403) {
-                alert('Anda tidak memiliki izin untuk menghapus komentar ini.');
-            } else if (response.status === 404) {
-                alert('Komentar tidak ditemukan.');
-            }
-            else {
-                const errorData = await response.json();
-                alert('Gagal menghapus komentar: ' + (errorData.message || 'Terjadi kesalahan.'));
-            }
-        } catch (error) {
-            console.error('Error deleting comment:', error);
-            alert('Terjadi kesalahan saat menghapus komentar.');
-        }
-    };
+    if (response.ok) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Komentar berhasil dihapus!',
+        toast: true,
+        position: 'top-end',
+        timer: 3000,
+        showConfirmButton: false,
+      });
+
+      setComments(prevComments => {
+        const updatedComments = prevComments.filter(comment => comment.id !== commentId);
+        return updatedComments.map(comment => ({
+          ...comment,
+          replies: comment.replies?.filter(reply => reply.id !== commentId) || []
+        }));
+      });
+
+    } else if (response.status === 403) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Akses ditolak',
+        text: 'Anda tidak memiliki izin untuk menghapus komentar ini.',
+      });
+    } else if (response.status === 404) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Komentar tidak ditemukan',
+        text: 'Komentar sudah dihapus atau tidak tersedia.',
+      });
+    } else {
+      const errorData = await response.json();
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal menghapus komentar',
+        text: errorData.message || 'Terjadi kesalahan.',
+      });
+    }
+
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops!',
+      text: 'Terjadi kesalahan saat menghapus komentar.',
+    });
+  }
+};
+
 
     return (
         <>
@@ -245,24 +313,26 @@ export default function PostDetail({ auth, post, relatedPosts, seo, post_types, 
                                             name="commenterName"
                                             value={auth.user.username}
                                             readOnly
-                                            className="w-full px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 focus:outline-none cursor-not-allowed"
+                                            className="w-full px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 focus:outline-none cursor-not-allowed"
                                         />
                                     </div>
                                     <div className="mb-4">
                                         <label htmlFor="commentContent" className="block text-primary-text text-sm font-medium mb-2">Komentar Anda</label>
-                                        <textarea
-                                            id="commentContent"
-                                            name="commentContent"
-                                            rows="5"
-                                            className="w-full px-4 py-2 rounded-md bg-white text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            placeholder={replyToCommentId ? `Tulis balasan Anda untuk ${replyToUsername}...` : "Tulis komentar Anda di sini..."}
-                                            value={commentContent}
-                                            onChange={(e) => setCommentContent(e.target.value)}
-                                        ></textarea>
+                                       <textarea
+                                            ref={commentTextareaRef}
+                                            id="commentContent"
+                                            name="commentContent"
+                                            rows="5"
+                                            className="w-full px-4 py-2 rounded-lg border bg-transparent text-secondary-text focus:outline-none focus:ring-1 focus:ring-primary-btn"
+                                            placeholder={replyToCommentId ? `Tulis balasan Anda untuk ${replyToUsername}...` : "Tulis komentar Anda di sini..."}
+                                            value={commentContent}
+                                            onChange={(e) => setCommentContent(e.target.value)}
+                                        ></textarea>
+
                                     </div>
                                     <button
                                         type="submit"
-                                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md transition-colors duration-200"
+                                        className="bg-secondary-btn hover:bg-primary-btn text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200"
                                     >
                                         {replyToCommentId ? 'Kirim Balasan' : 'Kirim Komentar'}
                                     </button>
@@ -274,7 +344,7 @@ export default function PostDetail({ auth, post, relatedPosts, seo, post_types, 
                                     </p>
                                     <Link
                                         href="/login"
-                                        className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-md shadow-lg transition-colors duration-200 transform hover:scale-105"
+                                        className="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-md shadow-lg transition-colors duration-200 transform hover:scale-105"
                                     >
                                         Login Sekarang
                                     </Link>
@@ -285,7 +355,7 @@ export default function PostDetail({ auth, post, relatedPosts, seo, post_types, 
                         <div>
                             <h3 className="text-xl font-semibold text-primary-text mb-4">Komentar Lainnya</h3>
                             {comments && comments.length > 0 ? (
-                                <div className="space-y-6">
+                                <div className="space-y-6 max-h-96 overflow-y-scroll pr-2 custom-scroll">
                                     {comments.map(comment => (
                                         <div key={comment.id} className="bg-primary-background p-4 rounded-lg shadow-sm">
                                             <div className="flex items-center justify-between mb-2">
@@ -385,7 +455,6 @@ export default function PostDetail({ auth, post, relatedPosts, seo, post_types, 
                                                             <p className="text-primary-text text-sm break-words">
                                                                 {reply.comment || 'Balasan tidak tersedia.'} {/* Ubah dari comment menjadi content */}
                                                             </p>
-                                                {/* Kondisi untuk menyembunyikan tombol "Balas" jika itu adalah balasan milik user yang sedang login */}
                                                             {auth?.user && auth.user.id !== reply.user_id && (
                                                                 <button
                                                                     onClick={() => handleReplyClick(reply.id, reply.user_comment?.username || "Pengguna Ini")}

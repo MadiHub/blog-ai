@@ -85,15 +85,24 @@ class CommentController extends Controller
     protected function filterProfanity(string $text): string
     {
         $badWords = [
-            'bangsat',
-            'kontol',
-            'memek',
-            'asu',
-            'ngentot',
-            'babi',
-            'anjing',
-            'ajg',
+            'bangsat', 'kontol', 'memek', 'asu', 'ngentot', 'babi', 'anjing', 'ajg',
+            'goblok', 'tolol', 'kampret', 'jancok', 'brengsek', 'perek', 'idiot',
+            'bodoh', 'keparat', 'setan', 'tai', 'pepek', 'kimak', 'sundal', 'sarap',
+            'pecun', 'lonte', 'bencong', 'banci', 'pelacur', 'cabul', 'jembut', 'titit',
+            'tetek', 'pantat', 'ngewe', 'ml', 'henceut', 'colmek', 'coli', 'kntl',
+            'pntk', 'jilat', 'jable', 'wikwik', 'bokep', 'jav', 'ngulum', 'anal',
+            
+            'k0nt0l', 'mem3k', 'ng3ntot', 'b@bi', '4njing', 'b4ngsat', 'p3pek', 'k0ntol',
+            'g0blok', 't0lol', 'j4ncok', 'b4bi', 'n4j1s', '1diot',
+
+            'fuck', 'shit', 'bitch', 'bastard', 'dick', 'pussy', 'asshole', 'jerk',
+            'motherfucker', 'whore', 'slut', 'faggot', 'retard', 'cunt',
+
+            'anjrit', 'anjay', 'dancok', 'tai', 'tolollu', 'ngatain', 'kocaklu',
+
+            'bj', 'sex', 'seks', '3gp', 'xnxx', 'xvideos', 'titid', 'ngewe', 'ewean',
         ];
+
 
         $pattern = '/\b(' . implode('|', $badWords) . ')\b/i';
 

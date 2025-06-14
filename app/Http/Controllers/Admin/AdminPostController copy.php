@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use DOMDocument; // Penting: Import DOMDocument untuk parsing HTML
 
 use App\Models\SEOModel;
 use App\Models\PostModel;
@@ -18,7 +17,6 @@ use App\Models\PostTypeModel;
 use App\Models\CategoryModel;
 use App\Models\TagModel;
 use App\Models\PostTagModel;
-use App\Models\CommentModel; // Penting: Import CommentModel jika digunakan untuk menghapus komentar
 
 class AdminPostController extends Controller
 {
@@ -26,7 +24,7 @@ class AdminPostController extends Controller
     {
         $SEO = SEOModel::first();
         $posts = PostModel::with('category', 'post_type')->orderBy('updated_at', 'desc')->get();
-        $postTypes = PostTypeModel::orderBy('position', 'asc')->get(['name', 'slug']);
+        $postTypes = PostTypeModel::orderBy('position', 'asc')->get(['name', 'slug']); 
         $data = [
             'seo' => $SEO,
             'posts' => $posts,
@@ -55,6 +53,7 @@ class AdminPostController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'title' => 'required|string|max:255',
             'post_type' => 'required',
@@ -97,27 +96,13 @@ class AdminPostController extends Controller
                 'published_at' => $request->status === 'published' ? now() : null,
             ]);
 
-            $contentImagesFilenames = [];
-            if (!empty($request->input('content'))) {
-                $dom = new DOMDocument();
-                libxml_use_internal_errors(true);
-                $dom->loadHTML($request->input('content'));
-                libxml_clear_errors();
-
-                $images = $dom->getElementsByTagName('img');
-                foreach ($images as $img) {
-                    $src = $img->getAttribute('src');
-                    if (Str::startsWith($src, '/storage/Images/Posts/Content/')) {
-                         $contentImagesFilenames[] = basename($src);
-                    }
+            if ($request->has('images') && is_array($request->input('images'))) {
+                foreach ($request->input('images') as $image) {
+                    $PostImageModel = new PostImageModel();
+                    $PostImageModel->post_id = $post->id;
+                    $PostImageModel->filename = $image;
+                    $PostImageModel->save();
                 }
-            }
-            
-            foreach ($contentImagesFilenames as $filename) {
-                PostImageModel::create([
-                    'post_id' => $post->id,
-                    'filename' => $filename,
-                ]);
             }
 
             $tagIds = [];
@@ -237,32 +222,17 @@ class AdminPostController extends Controller
             ]);
 
             $currentImageFilenames = $post->images->pluck('filename')->toArray();
+            $newImageFilenames = $request->input('images', []);
 
-            $newImageFilenamesFromContent = [];
-            if (!empty($request->input('content'))) {
-                $dom = new DOMDocument();
-                libxml_use_internal_errors(true);
-                $dom->loadHTML($request->input('content'));
-                libxml_clear_errors();
-
-                $images = $dom->getElementsByTagName('img');
-                foreach ($images as $img) {
-                    $src = $img->getAttribute('src');
-                    if (Str::startsWith($src, '/storage/Images/Posts/Content/')) {
-                        $newImageFilenamesFromContent[] = basename($src);
-                    }
-                }
-            }
-
-            $imagesToDelete = array_diff($currentImageFilenames, $newImageFilenamesFromContent);
+            $imagesToDelete = array_diff($currentImageFilenames, $newImageFilenames);
             foreach ($imagesToDelete as $filename) {
                 PostImageModel::where('post_id', $post->id)->where('filename', $filename)->delete();
-                if (Storage::disk('public')->exists('Images/Posts/Content/' . $filename)) {
-                    Storage::disk('public')->delete('Images/Posts/Content/' . $filename);
+                if (Storage::disk('public')->exists('Images/Posts/' . $filename)) {
+                    Storage::disk('public')->delete('Images/Posts/' . $filename);
                 }
             }
 
-            $imagesToAdd = array_diff($newImageFilenamesFromContent, $currentImageFilenames);
+            $imagesToAdd = array_diff($newImageFilenames, $currentImageFilenames);
             foreach ($imagesToAdd as $filename) {
                 PostImageModel::create([
                     'post_id' => $post->id,
@@ -288,54 +258,79 @@ class AdminPostController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error updating post: ' . $e->getMessage());
+            \Log::error('Error updating post with tags: ' . $e->getMessage());
             return back()->with('error', 'Failed to update post: ' . $e->getMessage());
         }
     }
 
-    public function destroy(string $id)
+     public function destroy(string $id)
     {
-        $post = PostModel::where('id', $id)->with('images', 'comments')->first(); // Load 'comments' relasi
+        // Temukan postingan berdasarkan ID, preload relasi 'images'
+        $post = PostModel::where('id', $id)->with('images')->first();
+
+        // DEBUG 1: Cek apakah post ditemukan dan relasi images sudah terload
+        // Ini akan menghentikan eksekusi dan menampilkan data $post (termasuk images)
+        // Jika images kosong tapi harusnya ada, masalah ada pada relasi model.
+        dd('DEBUG 1: Post object and its images:', $post->toArray(), $post->images->pluck('filename')->toArray());
 
         if (!$post) {
             return redirect()->back()->with('error', 'Postingan tidak ditemukan.');
         }
 
-        // Hapus SEMUA komentar yang terkait dengan postingan ini terlebih dahulu
-        // Ini mengatasi error foreign key constraint violation
-        $post->comments()->delete(); 
-
         // --- Proses Penghapusan Gambar Konten ---
+        // Iterasi setiap gambar yang terkait dengan postingan
         foreach ($post->images as $image) {
+            // Bentuk path lengkap ke file gambar konten
+            // PASTIKAN ADA GARIS MIRING (/) SETELAH 'Content'
             $filePath = 'Images/Posts/Content/' . $image->filename;
+
+            // Debugging for file existence can be added back once $post->images is populated
+            // dd('DEBUG 2: Attempting to delete content image:', [
+            //     'filename_from_db' => $image->filename,
+            //     'constructed_filepath' => $filePath,
+            //     'file_exists_in_storage' => Storage::disk('public')->exists($filePath)
+            // ]);
 
             if (Storage::disk('public')->exists($filePath)) {
                 Storage::disk('public')->delete($filePath);
             }
+            // Hapus entri gambar dari database untuk gambar ini
+            PostImageModel::where('id', $image->id)->delete(); // Hapus berdasarkan ID gambar
         }
-        PostImageModel::where('post_id', $post->id)->delete();
 
         // --- Proses Penghapusan Thumbnail (jika ada) ---
         if ($post->thumbnail) {
+            // Bentuk path lengkap ke file thumbnail
             $thumbnailPath = 'Images/Posts/Thumbnails/' . $post->thumbnail;
+
+            // Debugging for file existence can be added back once $post->images is populated
+            // dd('DEBUG 3: Attempting to delete thumbnail:', [
+            //     'thumbnail_filename_from_db' => $post->thumbnail,
+            //     'constructed_thumbnail_path' => $thumbnailPath,
+            //     'thumbnail_exists_in_storage' => Storage::disk('public')->exists($thumbnailPath)
+            // ]);
+
             if (Storage::disk('public')->exists($thumbnailPath)) {
                 Storage::disk('public')->delete($thumbnailPath);
             }
         }
 
         // --- Proses Penghapusan Relasi Tags (jika ada) ---
+        // Sinkronisasi dengan array kosong akan memutuskan semua relasi tags
         $post->tags()->sync([]);
 
         // --- Proses Penghapusan Postingan Utama ---
+        // Hapus entri postingan dari database
         $post->delete();
 
+        // Redirect kembali dengan pesan sukses
         return redirect()->back()->with('success', 'Postingan berhasil dihapus.');
     }
 
     public function upload_image_content(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
@@ -376,4 +371,5 @@ class AdminPostController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Image file not found on server or already deleted.'], 404);
     }
+
 }

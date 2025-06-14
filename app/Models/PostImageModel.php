@@ -23,5 +23,9 @@ class PostImageModel extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
-
+    
+    public function post()
+    {
+        return $this->belongsTo(PostModel::class, 'post_id');
+    }
 }
