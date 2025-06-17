@@ -53,8 +53,7 @@ class GoogleAuthController extends Controller
 
             Auth::login($user);
 
-            return redirect()->back()->with('success', 'Berhasil login!');
-
+            return redirect()->route('home.index')->with('success', 'Berhasil Login!');
 
         } catch (\Exception $e) {
             dd($e);

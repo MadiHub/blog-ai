@@ -85,7 +85,7 @@ class AdminPostController extends Controller
             }
 
             $post = PostModel::create([
-                'user_id' => 1,
+                'user_id' =>  Auth::id(),
                 'title' => $request->title,
                 'post_type_id' => $request->post_type,
                 'category_id' => $request->category,

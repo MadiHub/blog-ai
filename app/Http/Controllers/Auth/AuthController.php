@@ -118,7 +118,7 @@ class AuthController extends Controller
             $user = Auth::user();
 
             if ($user->role === 'admin' || $user->role === 'author') {
-                return redirect()->route('dashboard.index')->with('success', 'Login success!');
+                return Inertia::location(route('dashboard.index'));
             } else {
                 return redirect()->route('home.index')->with('success', 'Berhasil Login!');
             }
@@ -137,6 +137,6 @@ class AuthController extends Controller
 
         $request->session()->regenerateToken(); 
 
-        return redirect()->route('home.index')->with('success', 'Berhasil Logout!');
+        return Inertia::location(route('dashboard.index'));
     }
 }

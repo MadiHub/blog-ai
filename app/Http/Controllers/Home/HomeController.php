@@ -155,6 +155,8 @@ class HomeController extends Controller
                                           ->limit(3)
                                           ->get();
 
+        // dd($relatedPosts);
+
         $postTypes = PostTypeModel::get();
 
         $comments = $post->comments()

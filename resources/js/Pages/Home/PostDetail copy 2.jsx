@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import HomeLayout from '@/Layouts/HomeLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import { addCopyButtonsToCodeBlocks } from '@/Components/previewCodeBlockEnhancements';
+import Swal from 'sweetalert2';
 
 const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
